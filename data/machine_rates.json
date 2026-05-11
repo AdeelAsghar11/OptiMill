@@ -1,0 +1,890 @@
+[
+  {
+    "machine_id": "MCN-ULT-100",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 20.0,
+    "overhead_energy_hr": 4.38,
+    "maintenance_cost_hr": 6.57,
+    "depreciation_hr": 10.95,
+    "total_hourly_rate": 41.9,
+    "precision_mm": 0.05,
+    "age_years": 9,
+    "defect_rate_base": 0.0275,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 593
+  },
+  {
+    "machine_id": "MCN-PRE-101",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 18.07,
+    "overhead_energy_hr": 4.35,
+    "maintenance_cost_hr": 6.52,
+    "depreciation_hr": 10.87,
+    "total_hourly_rate": 39.81,
+    "precision_mm": 0.1,
+    "age_years": 6,
+    "defect_rate_base": 0.02,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 292
+  },
+  {
+    "machine_id": "MCN-HEA-102",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 11.83,
+    "overhead_energy_hr": 1.97,
+    "maintenance_cost_hr": 2.95,
+    "depreciation_hr": 4.91,
+    "total_hourly_rate": 21.66,
+    "precision_mm": 0.69,
+    "age_years": 11,
+    "defect_rate_base": 0.0325,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 324
+  },
+  {
+    "machine_id": "MCN-HEA-103",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 12.97,
+    "overhead_energy_hr": 2.14,
+    "maintenance_cost_hr": 3.21,
+    "depreciation_hr": 5.36,
+    "total_hourly_rate": 23.68,
+    "precision_mm": 0.55,
+    "age_years": 14,
+    "defect_rate_base": 0.04,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 120
+  },
+  {
+    "machine_id": "MCN-STA-104",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 9.87,
+    "overhead_energy_hr": 1.71,
+    "maintenance_cost_hr": 2.56,
+    "depreciation_hr": 4.27,
+    "total_hourly_rate": 18.41,
+    "precision_mm": 1.42,
+    "age_years": 15,
+    "defect_rate_base": 0.0425,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 335
+  },
+  {
+    "machine_id": "MCN-PRE-105",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 16.34,
+    "overhead_energy_hr": 3.86,
+    "maintenance_cost_hr": 5.8,
+    "depreciation_hr": 9.66,
+    "total_hourly_rate": 35.66,
+    "precision_mm": 0.14,
+    "age_years": 6,
+    "defect_rate_base": 0.02,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 502
+  },
+  {
+    "machine_id": "MCN-ULT-106",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 20.98,
+    "overhead_energy_hr": 4.33,
+    "maintenance_cost_hr": 6.5,
+    "depreciation_hr": 10.83,
+    "total_hourly_rate": 42.64,
+    "precision_mm": 0.05,
+    "age_years": 1,
+    "defect_rate_base": 0.0075,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 726
+  },
+  {
+    "machine_id": "MCN-PRE-107",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 18.48,
+    "overhead_energy_hr": 3.7,
+    "maintenance_cost_hr": 5.54,
+    "depreciation_hr": 9.24,
+    "total_hourly_rate": 36.96,
+    "precision_mm": 0.14,
+    "age_years": 6,
+    "defect_rate_base": 0.02,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 151
+  },
+  {
+    "machine_id": "MCN-HEA-108",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 13.13,
+    "overhead_energy_hr": 2.38,
+    "maintenance_cost_hr": 3.57,
+    "depreciation_hr": 5.95,
+    "total_hourly_rate": 25.03,
+    "precision_mm": 0.48,
+    "age_years": 13,
+    "defect_rate_base": 0.0375,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 361
+  },
+  {
+    "machine_id": "MCN-PRE-109",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 18.87,
+    "overhead_energy_hr": 3.66,
+    "maintenance_cost_hr": 5.49,
+    "depreciation_hr": 9.15,
+    "total_hourly_rate": 37.17,
+    "precision_mm": 0.13,
+    "age_years": 14,
+    "defect_rate_base": 0.04,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 194
+  },
+  {
+    "machine_id": "MCN-PRE-110",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 20.93,
+    "overhead_energy_hr": 3.47,
+    "maintenance_cost_hr": 5.21,
+    "depreciation_hr": 8.69,
+    "total_hourly_rate": 38.3,
+    "precision_mm": 0.26,
+    "age_years": 3,
+    "defect_rate_base": 0.0125,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 129
+  },
+  {
+    "machine_id": "MCN-STA-111",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 7.48,
+    "overhead_energy_hr": 1.48,
+    "maintenance_cost_hr": 2.22,
+    "depreciation_hr": 3.7,
+    "total_hourly_rate": 14.88,
+    "precision_mm": 1.29,
+    "age_years": 5,
+    "defect_rate_base": 0.0175,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 196
+  },
+  {
+    "machine_id": "MCN-ULT-112",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 22.21,
+    "overhead_energy_hr": 4.03,
+    "maintenance_cost_hr": 6.05,
+    "depreciation_hr": 10.08,
+    "total_hourly_rate": 42.37,
+    "precision_mm": 0.08,
+    "age_years": 7,
+    "defect_rate_base": 0.0225,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 540
+  },
+  {
+    "machine_id": "MCN-ULT-113",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 22.36,
+    "overhead_energy_hr": 4.47,
+    "maintenance_cost_hr": 6.71,
+    "depreciation_hr": 11.18,
+    "total_hourly_rate": 44.72,
+    "precision_mm": 0.09,
+    "age_years": 14,
+    "defect_rate_base": 0.04,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 747
+  },
+  {
+    "machine_id": "MCN-HEA-114",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 12.67,
+    "overhead_energy_hr": 2.47,
+    "maintenance_cost_hr": 3.7,
+    "depreciation_hr": 6.18,
+    "total_hourly_rate": 25.02,
+    "precision_mm": 0.5,
+    "age_years": 12,
+    "defect_rate_base": 0.035,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 554
+  },
+  {
+    "machine_id": "MCN-STA-115",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 9.53,
+    "overhead_energy_hr": 1.7,
+    "maintenance_cost_hr": 2.55,
+    "depreciation_hr": 4.25,
+    "total_hourly_rate": 18.03,
+    "precision_mm": 0.8,
+    "age_years": 14,
+    "defect_rate_base": 0.04,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 661
+  },
+  {
+    "machine_id": "MCN-STA-116",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 7.7,
+    "overhead_energy_hr": 1.72,
+    "maintenance_cost_hr": 2.58,
+    "depreciation_hr": 4.31,
+    "total_hourly_rate": 16.31,
+    "precision_mm": 1.28,
+    "age_years": 7,
+    "defect_rate_base": 0.0225,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 784
+  },
+  {
+    "machine_id": "MCN-ULT-117",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 22.02,
+    "overhead_energy_hr": 4.07,
+    "maintenance_cost_hr": 6.11,
+    "depreciation_hr": 10.19,
+    "total_hourly_rate": 42.39,
+    "precision_mm": 0.1,
+    "age_years": 14,
+    "defect_rate_base": 0.04,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 347
+  },
+  {
+    "machine_id": "MCN-HEA-118",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 11.13,
+    "overhead_energy_hr": 2.39,
+    "maintenance_cost_hr": 3.59,
+    "depreciation_hr": 5.99,
+    "total_hourly_rate": 23.1,
+    "precision_mm": 0.54,
+    "age_years": 3,
+    "defect_rate_base": 0.0125,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 656
+  },
+  {
+    "machine_id": "MCN-ULT-119",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 22.47,
+    "overhead_energy_hr": 3.99,
+    "maintenance_cost_hr": 5.98,
+    "depreciation_hr": 9.96,
+    "total_hourly_rate": 42.4,
+    "precision_mm": 0.06,
+    "age_years": 10,
+    "defect_rate_base": 0.03,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 421
+  },
+  {
+    "machine_id": "MCN-ULT-120",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 19.19,
+    "overhead_energy_hr": 4.61,
+    "maintenance_cost_hr": 6.92,
+    "depreciation_hr": 11.52,
+    "total_hourly_rate": 42.24,
+    "precision_mm": 0.07,
+    "age_years": 6,
+    "defect_rate_base": 0.02,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 95
+  },
+  {
+    "machine_id": "MCN-PRE-121",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 19.55,
+    "overhead_energy_hr": 3.43,
+    "maintenance_cost_hr": 5.14,
+    "depreciation_hr": 8.57,
+    "total_hourly_rate": 36.69,
+    "precision_mm": 0.17,
+    "age_years": 1,
+    "defect_rate_base": 0.0075,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 306
+  },
+  {
+    "machine_id": "MCN-ULT-122",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 20.47,
+    "overhead_energy_hr": 4.5,
+    "maintenance_cost_hr": 6.76,
+    "depreciation_hr": 11.26,
+    "total_hourly_rate": 42.99,
+    "precision_mm": 0.08,
+    "age_years": 3,
+    "defect_rate_base": 0.0125,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 220
+  },
+  {
+    "machine_id": "MCN-PRE-123",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 17.62,
+    "overhead_energy_hr": 3.14,
+    "maintenance_cost_hr": 4.7,
+    "depreciation_hr": 7.84,
+    "total_hourly_rate": 33.3,
+    "precision_mm": 0.27,
+    "age_years": 10,
+    "defect_rate_base": 0.03,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 191
+  },
+  {
+    "machine_id": "MCN-HEA-124",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 10.27,
+    "overhead_energy_hr": 2.16,
+    "maintenance_cost_hr": 3.24,
+    "depreciation_hr": 5.41,
+    "total_hourly_rate": 21.08,
+    "precision_mm": 0.57,
+    "age_years": 13,
+    "defect_rate_base": 0.0375,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 590
+  },
+  {
+    "machine_id": "MCN-PRE-125",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 18.7,
+    "overhead_energy_hr": 3.86,
+    "maintenance_cost_hr": 5.78,
+    "depreciation_hr": 9.64,
+    "total_hourly_rate": 37.98,
+    "precision_mm": 0.26,
+    "age_years": 15,
+    "defect_rate_base": 0.0425,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 728
+  },
+  {
+    "machine_id": "MCN-ULT-126",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 22.88,
+    "overhead_energy_hr": 4.15,
+    "maintenance_cost_hr": 6.23,
+    "depreciation_hr": 10.38,
+    "total_hourly_rate": 43.64,
+    "precision_mm": 0.06,
+    "age_years": 4,
+    "defect_rate_base": 0.015,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 62
+  },
+  {
+    "machine_id": "MCN-HEA-127",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 10.18,
+    "overhead_energy_hr": 2.28,
+    "maintenance_cost_hr": 3.42,
+    "depreciation_hr": 5.69,
+    "total_hourly_rate": 21.57,
+    "precision_mm": 0.54,
+    "age_years": 9,
+    "defect_rate_base": 0.0275,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 714
+  },
+  {
+    "machine_id": "MCN-HEA-128",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 11.93,
+    "overhead_energy_hr": 2.23,
+    "maintenance_cost_hr": 3.34,
+    "depreciation_hr": 5.58,
+    "total_hourly_rate": 23.08,
+    "precision_mm": 0.55,
+    "age_years": 7,
+    "defect_rate_base": 0.0225,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 604
+  },
+  {
+    "machine_id": "MCN-ULT-129",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 21.68,
+    "overhead_energy_hr": 4.1,
+    "maintenance_cost_hr": 6.14,
+    "depreciation_hr": 10.24,
+    "total_hourly_rate": 42.16,
+    "precision_mm": 0.06,
+    "age_years": 5,
+    "defect_rate_base": 0.0175,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 662
+  },
+  {
+    "machine_id": "MCN-STA-130",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 8.61,
+    "overhead_energy_hr": 1.9,
+    "maintenance_cost_hr": 2.86,
+    "depreciation_hr": 4.76,
+    "total_hourly_rate": 18.13,
+    "precision_mm": 1.03,
+    "age_years": 6,
+    "defect_rate_base": 0.02,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 528
+  },
+  {
+    "machine_id": "MCN-STA-131",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 7.14,
+    "overhead_energy_hr": 1.62,
+    "maintenance_cost_hr": 2.43,
+    "depreciation_hr": 4.06,
+    "total_hourly_rate": 15.25,
+    "precision_mm": 1.19,
+    "age_years": 15,
+    "defect_rate_base": 0.0425,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 770
+  },
+  {
+    "machine_id": "MCN-PRE-132",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 22.5,
+    "overhead_energy_hr": 3.73,
+    "maintenance_cost_hr": 5.6,
+    "depreciation_hr": 9.33,
+    "total_hourly_rate": 41.16,
+    "precision_mm": 0.17,
+    "age_years": 9,
+    "defect_rate_base": 0.0275,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 460
+  },
+  {
+    "machine_id": "MCN-HEA-133",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 13.88,
+    "overhead_energy_hr": 2.45,
+    "maintenance_cost_hr": 3.68,
+    "depreciation_hr": 6.14,
+    "total_hourly_rate": 26.15,
+    "precision_mm": 0.56,
+    "age_years": 2,
+    "defect_rate_base": 0.01,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 199
+  },
+  {
+    "machine_id": "MCN-STA-134",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 8.9,
+    "overhead_energy_hr": 1.59,
+    "maintenance_cost_hr": 2.39,
+    "depreciation_hr": 3.97,
+    "total_hourly_rate": 16.85,
+    "precision_mm": 0.89,
+    "age_years": 5,
+    "defect_rate_base": 0.0175,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 90
+  },
+  {
+    "machine_id": "MCN-HEA-135",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 11.74,
+    "overhead_energy_hr": 2.41,
+    "maintenance_cost_hr": 3.62,
+    "depreciation_hr": 6.03,
+    "total_hourly_rate": 23.8,
+    "precision_mm": 0.6,
+    "age_years": 10,
+    "defect_rate_base": 0.03,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 75
+  },
+  {
+    "machine_id": "MCN-HEA-136",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 14.14,
+    "overhead_energy_hr": 2.32,
+    "maintenance_cost_hr": 3.49,
+    "depreciation_hr": 5.81,
+    "total_hourly_rate": 25.76,
+    "precision_mm": 0.64,
+    "age_years": 15,
+    "defect_rate_base": 0.0425,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 787
+  },
+  {
+    "machine_id": "MCN-STA-137",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 10.26,
+    "overhead_energy_hr": 1.9,
+    "maintenance_cost_hr": 2.85,
+    "depreciation_hr": 4.76,
+    "total_hourly_rate": 19.77,
+    "precision_mm": 1.5,
+    "age_years": 13,
+    "defect_rate_base": 0.0375,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 407
+  },
+  {
+    "machine_id": "MCN-ULT-138",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 21.98,
+    "overhead_energy_hr": 4.35,
+    "maintenance_cost_hr": 6.53,
+    "depreciation_hr": 10.88,
+    "total_hourly_rate": 43.74,
+    "precision_mm": 0.06,
+    "age_years": 7,
+    "defect_rate_base": 0.0225,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 746
+  },
+  {
+    "machine_id": "MCN-STA-139",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 7.28,
+    "overhead_energy_hr": 1.51,
+    "maintenance_cost_hr": 2.26,
+    "depreciation_hr": 3.77,
+    "total_hourly_rate": 14.82,
+    "precision_mm": 1.14,
+    "age_years": 7,
+    "defect_rate_base": 0.0225,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 728
+  },
+  {
+    "machine_id": "MCN-PRE-140",
+    "type": "Precision Embroidery",
+    "operator_wage_hr": 19.18,
+    "overhead_energy_hr": 3.45,
+    "maintenance_cost_hr": 5.18,
+    "depreciation_hr": 8.63,
+    "total_hourly_rate": 36.44,
+    "precision_mm": 0.27,
+    "age_years": 6,
+    "defect_rate_base": 0.02,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Fine-Cotton"
+    ],
+    "daily_capacity": 510
+  },
+  {
+    "machine_id": "MCN-HEA-141",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 13.54,
+    "overhead_energy_hr": 2.66,
+    "maintenance_cost_hr": 3.99,
+    "depreciation_hr": 6.66,
+    "total_hourly_rate": 26.85,
+    "precision_mm": 0.57,
+    "age_years": 4,
+    "defect_rate_base": 0.015,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 381
+  },
+  {
+    "machine_id": "MCN-HEA-142",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 14.12,
+    "overhead_energy_hr": 3.15,
+    "maintenance_cost_hr": 4.73,
+    "depreciation_hr": 7.89,
+    "total_hourly_rate": 29.89,
+    "precision_mm": 0.63,
+    "age_years": 1,
+    "defect_rate_base": 0.0075,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 107
+  },
+  {
+    "machine_id": "MCN-ULT-143",
+    "type": "Ultra-Finishing",
+    "operator_wage_hr": 21.58,
+    "overhead_energy_hr": 4.02,
+    "maintenance_cost_hr": 6.03,
+    "depreciation_hr": 10.06,
+    "total_hourly_rate": 41.69,
+    "precision_mm": 0.07,
+    "age_years": 1,
+    "defect_rate_base": 0.0075,
+    "material_compat": [
+      "Silk",
+      "Satin",
+      "Tech-Fabrics"
+    ],
+    "daily_capacity": 445
+  },
+  {
+    "machine_id": "MCN-STA-144",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 5.54,
+    "overhead_energy_hr": 1.34,
+    "maintenance_cost_hr": 2.01,
+    "depreciation_hr": 3.35,
+    "total_hourly_rate": 12.24,
+    "precision_mm": 1.28,
+    "age_years": 12,
+    "defect_rate_base": 0.035,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 357
+  },
+  {
+    "machine_id": "MCN-HEA-145",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 11.46,
+    "overhead_energy_hr": 1.97,
+    "maintenance_cost_hr": 2.95,
+    "depreciation_hr": 4.92,
+    "total_hourly_rate": 21.3,
+    "precision_mm": 0.44,
+    "age_years": 13,
+    "defect_rate_base": 0.0375,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 340
+  },
+  {
+    "machine_id": "MCN-HEA-146",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 14.84,
+    "overhead_energy_hr": 2.77,
+    "maintenance_cost_hr": 4.15,
+    "depreciation_hr": 6.92,
+    "total_hourly_rate": 28.68,
+    "precision_mm": 0.62,
+    "age_years": 15,
+    "defect_rate_base": 0.0425,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 667
+  },
+  {
+    "machine_id": "MCN-HEA-147",
+    "type": "Heavy Duty Stitcher",
+    "operator_wage_hr": 13.45,
+    "overhead_energy_hr": 2.23,
+    "maintenance_cost_hr": 3.35,
+    "depreciation_hr": 5.58,
+    "total_hourly_rate": 24.61,
+    "precision_mm": 0.68,
+    "age_years": 14,
+    "defect_rate_base": 0.04,
+    "material_compat": [
+      "Denim",
+      "Canvas",
+      "Leather"
+    ],
+    "daily_capacity": 696
+  },
+  {
+    "machine_id": "MCN-STA-148",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 8.99,
+    "overhead_energy_hr": 1.79,
+    "maintenance_cost_hr": 2.69,
+    "depreciation_hr": 4.48,
+    "total_hourly_rate": 17.95,
+    "precision_mm": 0.93,
+    "age_years": 1,
+    "defect_rate_base": 0.0075,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 201
+  },
+  {
+    "machine_id": "MCN-STA-149",
+    "type": "Standard Industrial",
+    "operator_wage_hr": 8.2,
+    "overhead_energy_hr": 1.91,
+    "maintenance_cost_hr": 2.87,
+    "depreciation_hr": 4.78,
+    "total_hourly_rate": 17.76,
+    "precision_mm": 1.19,
+    "age_years": 12,
+    "defect_rate_base": 0.035,
+    "material_compat": [
+      "Cotton",
+      "Polyester"
+    ],
+    "daily_capacity": 718
+  }
+]
