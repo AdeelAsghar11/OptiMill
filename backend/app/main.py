@@ -6,6 +6,8 @@ from app.api.v1.matcher import router as matcher_router
 from app.api.v1.quoter import router as quoter_router
 from app.api.v1.scheduler import router as scheduler_router
 from app.api.v1.admin import router as admin_router
+from app.api.v1.orders import router as orders_router
+from app.api.v1.auth import router as auth_router
 
 app = FastAPI(
     title="OptiMill: Rule-Based Manufacturing Engine",
@@ -28,6 +30,8 @@ app.include_router(matcher_router, prefix="/api/v1/match", tags=["Machine Matchi
 app.include_router(quoter_router, prefix="/api/v1/quote", tags=["Financial Quoting"])
 app.include_router(scheduler_router, prefix="/api/v1/schedule", tags=["Production Scheduling"])
 app.include_router(admin_router, prefix="/api/v1/admin", tags=["Admin Control Panel"])
+app.include_router(orders_router, prefix="/api/v1/orders", tags=["Order Management"])
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 
 @app.get("/")
 async def root():
