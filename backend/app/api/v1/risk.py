@@ -1,13 +1,19 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.risk import OrderCreate, RiskAnalysisResponse, MachineInfo
+from typing import List
+from app.schemas.risk import OrderCreate, RiskAnalysisResponse, MachineInfo, MatchResult
 from app.engine.risk_scorer import engine
 
 router = APIRouter()
 
-@router.post("/analyze", response_model=RiskAnalysisResponse)
-async def analyze_production_risk(order: OrderCreate, machine: MachineInfo):
+@router.post("/match", response_model=List[MatchResult])
+async def match_production_line(order: OrderCreate):
     """
-    Production-grade endpoint to analyze quality risk using the rule-based engine.
+    ### Deterministic Machine Matching
+    Calculates a multi-criteria score based on:
+    1. **Material Compatibility** (Filter)
+    2. **Precision Margin** (Weight: 20%)
+    3. **Operational Efficiency** (Weight: 40%)
+    4. **Historical Quality Score** (Weight: 40%)
     """
     try:
         # Transform Pydantic models to dict for the engine
