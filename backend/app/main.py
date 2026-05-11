@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.risk import router as risk_router
+from app.api.v1.matcher import router as matcher_router
+from app.api.v1.quoter import router as quoter_router
 
 app = FastAPI(
     title="OptiMill: Rule-Based Manufacturing Engine",
@@ -20,6 +22,8 @@ app.add_middleware(
 
 # Register Routers
 app.include_router(risk_router, prefix="/api/v1/risk", tags=["Risk Analysis"])
+app.include_router(matcher_router, prefix="/api/v1/match", tags=["Machine Matching"])
+app.include_router(quoter_router, prefix="/api/v1/quote", tags=["Financial Quoting"])
 
 @app.get("/")
 async def root():
