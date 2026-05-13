@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import { Upload, FileCode, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { CADViewer } from "./CADViewer";
+import dynamic from "next/dynamic";
+
+const CADViewer = dynamic(() => import("./CADViewer").then((mod) => mod.CADViewer), {
+  ssr: false,
+});
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 

@@ -1,11 +1,12 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stage, useSTLLoader, PerspectiveCamera, Center } from "@react-three/drei";
+import { Canvas, useLoader } from "@react-three/fiber";
+import { OrbitControls, Stage, PerspectiveCamera, Center } from "@react-three/drei";
+import { STLLoader } from "three-stdlib";
 
 function Model({ url }: { url: string }) {
-  const geom = useSTLLoader(url);
+  const geom = useLoader(STLLoader, url);
   return (
     <mesh geometry={geom}>
       <meshStandardMaterial color="#3b82f6" />
