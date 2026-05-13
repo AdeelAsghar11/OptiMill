@@ -1,53 +1,72 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-from datetime import datetime, timedelta
+from pydantic import BaseModel, EmailStr
+from app.supabase import supabase
+from app.auth.utils import get_current_user
 from typing import Optional
-from pydantic import BaseModel
-import os
 
 router = APIRouter()
 
-# Security Config
-SECRET_KEY = os.getenv("SECRET_KEY", "prod_secret_key_8829")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 11520 # 8 days
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    role: Optional[str] = "customer"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class UserSchema(BaseModel):
-    username: str
-    email: str
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-@router.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    # In a full project, we'd verify against DB
-    # For now, we allow any login for demo convenience while keeping the structure
-    access_token = create_access_token(
-        data={"sub": form_data.username}, 
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-@router.get("/me", response_model=UserSchema)
-async def read_users_me(token: str = Depends(oauth2_scheme)):
+@router.post("/register")
+async def register(user_data: UserRegister):
+    # 1. Sign up user in Supabase Auth
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return {"username": username, "email": f"{username}@optimill.io"}
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        auth_res = supabase.auth.sign_up({
+            "email": user_data.email,
+            "password": user_data.password,
+            "options": {
+                "data": {
+                    "name": user_data.name,
+                    "role": user_data.role
+                }
+            }
+        })
+        
+        if not auth_res.user:
+            raise HTTPException(status_code=400, detail="Registration failed")
+
+        # 2. Sync profile to our 'users' table
+        # Note: In production, use a Supabase Trigger/Function to do this automatically
+        profile_res = supabase.table("users").insert({
+            "id": auth_res.user.id,
+            "name": user_data.name,
+            "email": user_data.email,
+            "role": user_data.role
+        }).execute()
+
+        return {"message": "User registered successfully. Please check your email for verification.", "user": profile_res.data}
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/login")
+async def login(credentials: UserLogin):
+    try:
+        res = supabase.auth.sign_in_with_password({
+            "email": credentials.email,
+            "password": credentials.password
+        })
+        
+        if not res.session:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        return {
+            "access_token": res.session.access_token,
+            "token_type": "bearer",
+            "expires_in": res.session.expires_in
+        }
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+@router.get("/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+    return current_user
