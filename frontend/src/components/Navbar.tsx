@@ -4,12 +4,13 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Cpu, Upload, Store, LayoutDashboard } from "lucide-react";
+import { Cpu, Upload, Store, LayoutDashboard, Package } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Upload CAD", href: "/upload", icon: Upload },
   { label: "Shops", href: "/shops", icon: Store },
+  { label: "Orders", href: "/orders", icon: Package },
 ];
 
 export function Navbar() {
