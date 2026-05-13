@@ -12,6 +12,7 @@ import {
   Activity,
   Layers
 } from "lucide-react";
+import Link from "next/link";
 import { SprintTracker } from "@/components/dashboard/SprintTracker";
 
 const steps = [
@@ -38,8 +39,8 @@ export default function Dashboard() {
             Opti<span className="text-blue-500">Mill</span>
           </motion.h1>
           <p className="text-slate-400 max-w-md">
-            Production-grade rule-based manufacturing orchestration. 
-            Deterministic intelligence for complex garment manufacturing.
+            The intelligent marketplace for CAD analysis and fabrication. 
+            Deterministic matching for CNC, 3D printing, and high-precision manufacturing.
           </p>
         </div>
         <SprintTracker />
@@ -84,16 +85,16 @@ export default function Dashboard() {
                   {steps[activeStep - 1].title} Phase
                 </h2>
                 <p className="text-xl text-slate-400 leading-relaxed mb-8">
-                  {steps[activeStep - 1].desc}. Powered by deterministic rules 
-                  and realistic $12-$45/hr machine data.
+                  {steps[activeStep - 1].desc}. Powered by AI analysis 
+                  and a network of verified 3D printing and CNC shops.
                 </p>
-                <button 
-                  onClick={() => setActiveStep(prev => prev < 5 ? prev + 1 : 1)}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-semibold transition-all group"
+                <Link 
+                  href="/upload"
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-semibold transition-all group"
                 >
-                  {activeStep === 5 ? "Restart Demo" : "Advance Pipeline"}
+                  Start New Project
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Link>
               </div>
               
               <div className="relative">
