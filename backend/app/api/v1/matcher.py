@@ -1,22 +1,23 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
+from app.supabase import supabase
+from app.auth.utils import get_current_user
 from typing import List
-from app.schemas.risk import OrderCreate
-from app.engine.matcher import matcher, MatchResult
 
 router = APIRouter()
 
-@router.post("/match", response_model=List[MatchResult])
-async def match_production_line(order: OrderCreate):
+@router.get("/shops")
+async def get_matching_shops(capability: str = None, material: str = None):
     """
-    Find the best production machines for a given order spec.
+    Find shops based on capabilities and materials (TRD Phase 3).
     """
     try:
-        results = matcher.find_matches(
-            fabric_type=order.fabric_type,
-            req_tolerance=order.required_tolerance
-        )
-        if not results:
-            raise HTTPException(status_code=404, detail="No compatible production lines found for these specifications.")
-        return results
+        query = supabase.table("shops").select("*")
+        if capability:
+            query = query.contains("capabilities", [capability])
+        if material:
+            query = query.contains("materials", [material])
+        
+        res = query.execute()
+        return res.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

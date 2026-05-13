@@ -1,24 +1,18 @@
-from fastapi import APIRouter, HTTPException
-from typing import List
-from app.schemas.risk import OrderCreate, RiskAnalysisResponse, MachineInfo, MatchResult
-from app.engine.risk_scorer import engine
+from fastapi import APIRouter, Depends, HTTPException
+from app.supabase import supabase
+from app.auth.utils import get_current_user
+from app.schemas.risk import OrderCreate, RiskAnalysisResponse
 
 router = APIRouter()
 
-@router.post("/match", response_model=List[MatchResult])
-async def match_production_line(order: OrderCreate):
+@router.post("/analyze", response_model=RiskAnalysisResponse)
+async def analyze_risk(order: OrderCreate, current_user: dict = Depends(get_current_user)):
     """
-    ### Deterministic Machine Matching
-    Calculates a multi-criteria score based on:
-    1. **Material Compatibility** (Filter)
-    2. **Precision Margin** (Weight: 20%)
-    3. **Operational Efficiency** (Weight: 40%)
-    4. **Historical Quality Score** (Weight: 40%)
+    AI-powered risk analysis (Placeholder for GPT-4 integration).
     """
-    try:
-        # Transform Pydantic models to dict for the engine
-        # In a real production scenario, machine data would be fetched from the DB
-        result = engine.analyze(order.model_dump(), machine.model_dump())
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Logic will be implemented in Phase 2
+    return {
+        "total_risk_score": 15.0,
+        "risk_level": "low",
+        "factors": []
+    }

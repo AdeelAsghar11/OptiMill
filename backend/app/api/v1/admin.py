@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from app.db.session import get_db
-from app.models.rule import Rule
-from pydantic import BaseModel
+from app.supabase import supabase
+from app.auth.utils import require_role
 from typing import List
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -16,10 +14,18 @@ class RuleSchema(BaseModel):
     description: str
     is_active: bool
 
+@router.get("/orders")
+async def admin_get_orders(current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        res = supabase.table("orders").select("*, profiles!inner(full_name)").execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/rules", response_model=List[RuleSchema])
-async def get_active_rules(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Rule))
-    return result.scalars().all()
+async def get_active_rules():
+    res = supabase.table("rules").select("*").eq("is_active", True).execute()
+    return res.data
 
 @router.post("/rules", response_model=RuleSchema)
 async def create_or_update_rule(rule: RuleSchema, db: AsyncSession = Depends(get_db)):

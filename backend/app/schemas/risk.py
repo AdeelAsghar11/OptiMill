@@ -21,3 +21,8 @@ class RiskAnalysisResponse(BaseModel):
     total_risk_score: float
     risk_level: str
     factors: List[RiskFactorSchema]
+
+class MatchResult(BaseModel):
+    machine_id: str
+    compatibility_score: float
+    reason: Optional[str] = None
