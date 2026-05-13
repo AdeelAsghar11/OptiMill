@@ -27,16 +27,14 @@ async def get_active_rules():
     res = supabase.table("rules").select("*").eq("is_active", True).execute()
     return res.data
 
-@router.post("/rules", response_model=RuleSchema)
-async def create_or_update_rule(rule: RuleSchema, db: AsyncSession = Depends(get_db)):
-    db_rule = await db.get(Rule, rule.id)
-    if db_rule:
-        for key, value in rule.model_dump().items():
-            setattr(db_rule, key, value)
-    else:
-        db_rule = Rule(**rule.model_dump())
-        db.add(db_rule)
-    
-    await db.commit()
-    await db.refresh(db_rule)
-    return db_rule
+@router.post("/rules")
+async def create_or_update_rule(rule: RuleSchema):
+    try:
+        res = supabase.table("rules").upsert({
+            "name": rule.name,
+            "description": rule.description,
+            "is_active": rule.is_active
+        }).execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

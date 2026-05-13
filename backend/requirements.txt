@@ -7,3 +7,6 @@ httpx
 pytest
 python-dotenv
 supabase
+email-validator
+openai
+python-multipart
