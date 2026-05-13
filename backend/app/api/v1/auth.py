@@ -19,13 +19,14 @@ class UserLogin(BaseModel):
 @router.post("/register")
 async def register(user_data: UserRegister):
     # 1. Sign up user in Supabase Auth
+    # The 'profiles' table will be auto-populated by a DB trigger
     try:
         auth_res = supabase.auth.sign_up({
             "email": user_data.email,
             "password": user_data.password,
             "options": {
                 "data": {
-                    "name": user_data.name,
+                    "full_name": user_data.name,
                     "role": user_data.role
                 }
             }
@@ -34,16 +35,7 @@ async def register(user_data: UserRegister):
         if not auth_res.user:
             raise HTTPException(status_code=400, detail="Registration failed")
 
-        # 2. Sync profile to our 'users' table
-        # Note: In production, use a Supabase Trigger/Function to do this automatically
-        profile_res = supabase.table("users").insert({
-            "id": auth_res.user.id,
-            "name": user_data.name,
-            "email": user_data.email,
-            "role": user_data.role
-        }).execute()
-
-        return {"message": "User registered successfully. Please check your email for verification.", "user": profile_res.data}
+        return {"message": "User registered successfully. Please check your email for verification.", "user": auth_res.user}
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -19,8 +19,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
-        # Get additional user info from our 'users' table
-        user_profile = supabase.table("users").select("*").eq("id", res.user.id).single().execute()
+        # Get additional user info from our 'profiles' table
+        user_profile = supabase.table("profiles").select("*").eq("id", res.user.id).single().execute()
         
         if not user_profile.data:
              raise HTTPException(
