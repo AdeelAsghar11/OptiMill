@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Store, Star, ArrowRight } from "lucide-react";
+import { Store, Star, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 // Fix for default marker icons in Leaflet with Next.js
@@ -33,8 +33,9 @@ function ChangeView({ center }: { center: [number, number] }) {
   return null;
 }
 
-export function ShopMap({ shops }: { shops: Shop[] }) {
-  const [center, setCenter] = useState<[number, number]>([51.505, -0.09]); // Default to London
+export function ShopMap({ shops, onSearchArea }: { shops: Shop[], onSearchArea?: (bounds: any) => void }) {
+  const [center, setCenter] = useState<[number, number]>([34.05, -118.24]); // Default to LA for demo
+  const [showSearchBtn, setShowSearchBtn] = useState(false);
 
   useEffect(() => {
     if (shops.length > 0 && shops[0].latitude && shops[0].longitude) {
@@ -46,6 +47,37 @@ export function ShopMap({ shops }: { shops: Shop[] }) {
     }
   }, [shops]);
 
+  function MapSearchControl() {
+    const map = useMapEvents({
+      moveend: () => setShowSearchBtn(true),
+      zoomend: () => setShowSearchBtn(true),
+    });
+
+    if (!showSearchBtn || !onSearchArea) return null;
+
+    return (
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[1000]">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const bounds = map.getBounds();
+            onSearchArea({
+              min_lat: bounds.getSouth(),
+              max_lat: bounds.getNorth(),
+              min_lon: bounds.getWest(),
+              max_lon: bounds.getEast(),
+            });
+            setShowSearchBtn(false);
+          }}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-bold shadow-2xl transition-all scale-110 border border-blue-400/20 whitespace-nowrap"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Search this area
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[500px] w-full rounded-3xl overflow-hidden border border-slate-800 glass relative">
       <MapContainer 
@@ -55,6 +87,7 @@ export function ShopMap({ shops }: { shops: Shop[] }) {
         style={{ height: "100%", width: "100%", zIndex: 1 }}
       >
         <ChangeView center={center} />
+        <MapSearchControl />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -69,7 +102,7 @@ export function ShopMap({ shops }: { shops: Shop[] }) {
                     <span className="font-bold text-slate-900">{shop.name}</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-slate-600 mb-3">
-                    <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                    <Star className="w-3 h-3 text-amber-500 fill-amber-400" />
                     {shop.rating || "N/A"} • {shop.location_city}
                   </div>
                   <Link 

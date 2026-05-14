@@ -54,6 +54,10 @@ async def discover_shops(
     material: Optional[str] = None,
     city: Optional[str] = None,
     min_rating: Optional[float] = None,
+    min_lat: Optional[float] = None,
+    max_lat: Optional[float] = None,
+    min_lon: Optional[float] = None,
+    max_lon: Optional[float] = None,
 ):
     """Discover shops filtered by capability, material, city, or rating."""
     try:
@@ -69,6 +73,10 @@ async def discover_shops(
             query = query.contains("capabilities", [capability])
         if material:
             query = query.contains("materials", [material])
+        if min_lat is not None and max_lat is not None:
+            query = query.gte("latitude", min_lat).lte("latitude", max_lat)
+        if min_lon is not None and max_lon is not None:
+            query = query.gte("longitude", min_lon).lte("longitude", max_lon)
 
         res = query.execute()
         shops = res.data

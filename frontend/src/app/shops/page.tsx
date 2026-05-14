@@ -25,6 +25,7 @@ export default function ShopsPage() {
   const [selectedMat, setSelectedMat] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
+  const [geoBounds, setGeoBounds] = useState<any>(null);
 
   const fetchShops = async () => {
     setLoading(true);
@@ -32,6 +33,12 @@ export default function ShopsPage() {
       const params: Record<string, string> = {};
       if (selectedCap) params.capability = selectedCap;
       if (selectedMat) params.material = selectedMat;
+      if (geoBounds) {
+        params.min_lat = geoBounds.min_lat;
+        params.max_lat = geoBounds.max_lat;
+        params.min_lon = geoBounds.min_lon;
+        params.max_lon = geoBounds.max_lon;
+      }
 
       const res = await axios.get(`${API_BASE_URL}/api/v1/shops/discover`, { params });
       setShops(res.data);
@@ -44,7 +51,11 @@ export default function ShopsPage() {
 
   useEffect(() => {
     fetchShops();
-  }, [selectedCap, selectedMat]);
+  }, [selectedCap, selectedMat, geoBounds]);
+
+  const handleSearchArea = (bounds: any) => {
+    setGeoBounds(bounds);
+  };
 
   const filtered = shops.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -210,7 +221,7 @@ export default function ShopsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <ShopMap shops={filtered} />
+              <ShopMap shops={filtered} onSearchArea={handleSearchArea} />
             </motion.div>
           )}
         </AnimatePresence>
