@@ -62,3 +62,11 @@ async def verify_shop(shop_id: str, verified: bool, current_user: dict = Depends
         return res.data[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/knowledge-base")
+async def get_knowledge_base(current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        res = supabase.table("design_material_mappings").select("*").execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

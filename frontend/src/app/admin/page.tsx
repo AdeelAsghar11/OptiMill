@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Settings, ShieldCheck, AlertTriangle, Plus, Save, 
-  Users, Store, Activity, CheckCircle, XCircle, Search
+  Users, Store, Activity, CheckCircle, XCircle, Search, Book
 } from "lucide-react";
 import axios from "axios";
 
@@ -15,6 +15,7 @@ export default function AdminPanel() {
   const [rules, setRules] = useState([]);
   const [users, setUsers] = useState([]);
   const [shops, setShops] = useState([]);
+  const [mappings, setMappings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,6 +36,10 @@ export default function AdminPanel() {
       if (activeTab === "shops") {
         const res = await axios.get(`${API_BASE_URL}/api/v1/admin/shops`);
         setShops(res.data);
+      }
+      if (activeTab === "knowledge") {
+        const res = await axios.get(`${API_BASE_URL}/api/v1/admin/knowledge-base`);
+        setMappings(res.data);
       }
     } catch (e) {
       console.error(e);
@@ -67,6 +72,7 @@ export default function AdminPanel() {
             { id: "users", label: "Users", icon: Users },
             { id: "shops", label: "Shops", icon: Store },
             { id: "engine", label: "Risk Engine", icon: Settings },
+            { id: "knowledge", label: "Knowledge Base", icon: Book },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -230,6 +236,51 @@ export default function AdminPanel() {
               </button>
             </div>
           </div>
+        )}
+
+        {activeTab === "knowledge" && (
+          <motion.div 
+            key="knowledge"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-8"
+          >
+            <div className="glass rounded-2xl overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-white/5 text-xs uppercase tracking-widest text-slate-500">
+                  <tr>
+                    <th className="px-6 py-4">Design Type</th>
+                    <th className="px-6 py-4">Material</th>
+                    <th className="px-6 py-4">Typical Quantity Range</th>
+                    <th className="px-6 py-4">Use Case</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {mappings.map((m) => (
+                    <tr key={m.id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 font-bold capitalize">{m.design_type}</td>
+                      <td className="px-6 py-4 text-blue-400">{m.material_name}</td>
+                      <td className="px-6 py-4 text-sm text-slate-400">{m.typical_quantity_range}</td>
+                      <td className="px-6 py-4 italic text-slate-500 text-sm">{m.use_case}</td>
+                    </tr>
+                  ))}
+                  {mappings.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                        No mappings found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-end">
+              <button className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2">
+                <Plus className="w-4 h-4" /> Add New Mapping
+              </button>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </main>
