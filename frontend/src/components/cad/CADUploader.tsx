@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, FileCode, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Upload, FileCode, CheckCircle2, AlertCircle, Loader2, Target, Box } from "lucide-react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 const CADViewer = dynamic(() => import("./CADViewer").then((mod) => mod.CADViewer), {
   ssr: false,
 });
+
+import { MaterialList } from "./MaterialList";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -137,8 +139,14 @@ export function CADUploader() {
                   <div className="text-4xl font-black text-blue-400">{result.feasibility_score}%</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-slate-500 text-xs uppercase tracking-widest block mb-1">Process</span>
-                  <div className="text-xl font-bold">{result.process_recommendation}</div>
+                  <span className="text-slate-500 text-xs uppercase tracking-widest block mb-1">Design Type</span>
+                  <div className="flex items-center gap-2 justify-end">
+                    <Target className="w-4 h-4 text-blue-400" />
+                    <div className="text-xl font-bold capitalize">{result.analysis.design_type || "General Part"}</div>
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">
+                    {result.analysis.design_category || "Manufacturing"}
+                  </div>
                 </div>
               </div>
 
@@ -150,8 +158,8 @@ export function CADUploader() {
                   <div className="font-bold capitalize">{result.analysis.complexity}</div>
                 </div>
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-                  <span className="text-slate-500 text-[10px] uppercase tracking-widest block mb-1">Est. Time</span>
-                  <div className="font-bold">{result.analysis.estimated_hours} Hours</div>
+                  <span className="text-slate-500 text-[10px] uppercase tracking-widest block mb-1">Process</span>
+                  <div className="font-bold">{result.process_recommendation}</div>
                 </div>
               </div>
 
@@ -164,6 +172,10 @@ export function CADUploader() {
                   *Based on global manufacturing averages.
                 </p>
               </div>
+
+              <div className="h-px bg-slate-800" />
+              
+              <MaterialList cadFileId={result.id} />
 
               <button 
                 onClick={() => setResult(null)}
