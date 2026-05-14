@@ -12,6 +12,7 @@ const CADViewer = dynamic(() => import("./CADViewer").then((mod) => mod.CADViewe
 });
 
 import { MaterialList } from "./MaterialList";
+import { ShopRecommendationList } from "./ShopRecommendationList";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -176,6 +177,10 @@ export function CADUploader() {
               <div className="h-px bg-slate-800" />
               
               <MaterialList cadFileId={result.id} />
+
+              <div className="h-px bg-slate-800" />
+
+              <ShopRecommendationList cadFileId={result.id} />
 
               <button 
                 onClick={() => setResult(null)}
