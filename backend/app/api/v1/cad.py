@@ -43,16 +43,16 @@ def _analyze_with_gemini(prompt: str) -> dict:
     return json.loads(response.text)
 
 
-def _analyze_with_grok(prompt: str) -> dict:
-    """Fallback: xAI Grok (OpenAI-compatible API)."""
+def _analyze_with_groq(prompt: str) -> dict:
+    """Fallback: Groq (LPU Inference)."""
     from openai import OpenAI
 
     client = OpenAI(
-        api_key=settings.GROK_API_KEY,
-        base_url="https://api.x.ai/v1",
+        api_key=settings.GROQ_API_KEY,
+        base_url="https://api.groq.com/openai/v1",
     )
     response = client.chat.completions.create(
-        model="grok-3-mini",
+        model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         response_format={"type": "json_object"},
     )
@@ -60,7 +60,7 @@ def _analyze_with_grok(prompt: str) -> dict:
 
 
 def _analyze_cad_metadata(filename: str, content_type: str, size: int) -> dict:
-    """Try Gemini first; fall back to Grok if Gemini is unavailable or errors."""
+    """Try Gemini first; fall back to Groq if Gemini is unavailable or errors."""
     prompt = _build_prompt(filename, content_type, size)
 
     if settings.GEMINI_API_KEY:
@@ -68,14 +68,14 @@ def _analyze_cad_metadata(filename: str, content_type: str, size: int) -> dict:
             logger.info("Analyzing CAD metadata with Gemini…")
             return _analyze_with_gemini(prompt)
         except Exception as e:
-            logger.warning(f"Gemini analysis failed ({e}); falling back to Grok.")
+            logger.warning(f"Gemini analysis failed ({e}); falling back to Groq.")
 
-    if settings.GROK_API_KEY:
-        logger.info("Analyzing CAD metadata with Grok…")
-        return _analyze_with_grok(prompt)
+    if settings.GROQ_API_KEY:
+        logger.info("Analyzing CAD metadata with Groq…")
+        return _analyze_with_groq(prompt)
 
     raise RuntimeError(
-        "No AI provider available. Set GEMINI_API_KEY or GROK_API_KEY in .env."
+        "No AI provider available. Set GEMINI_API_KEY or GROQ_API_KEY in .env."
     )
 
 
@@ -100,11 +100,11 @@ async def upload_and_analyze_cad(
         supabase.storage.from_("cad-files").upload(
             path=file_path,
             file=file_content,
-            file_options={"content-type": file.content_type},
+            file_options={"content-type": file.content_type, "upsert": "true"},
         )
         file_url = supabase.storage.from_("cad-files").get_public_url(file_path)
 
-        # 2. AI Analysis (Gemini → Grok fallback)
+        # 2. AI Analysis (Gemini → Groq fallback)
         analysis_result = _analyze_cad_metadata(
             filename=file.filename,
             content_type=file.content_type,

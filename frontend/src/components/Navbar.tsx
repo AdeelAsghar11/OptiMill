@@ -4,7 +4,9 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Cpu, Upload, Store, LayoutDashboard, Package } from "lucide-react";
+import { Cpu, Upload, Store, LayoutDashboard, Package, LogOut } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -15,6 +17,11 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user, isLoading } = useAuthStore();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <header className="border-b border-white/5 bg-[#0a0a0b]/80 backdrop-blur-xl sticky top-0 z-50">
@@ -57,18 +64,37 @@ export function Navbar() {
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">
-          <Link
-            href="/auth/login"
-            className="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white transition-colors font-medium"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/auth/register"
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-500/20"
-          >
-            Get Started
-          </Link>
+          {isLoading ? (
+            <div className="w-20 h-8 rounded-xl bg-white/5 animate-pulse" />
+          ) : user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-slate-300">
+                {user.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors font-medium"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white transition-colors font-medium"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/auth/register"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-500/20"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

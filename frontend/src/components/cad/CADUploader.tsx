@@ -5,6 +5,7 @@ import { Upload, FileCode, CheckCircle2, AlertCircle, Loader2 } from "lucide-rea
 import axios from "axios";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import { supabase } from "@/lib/supabase";
 
 const CADViewer = dynamic(() => import("./CADViewer").then((mod) => mod.CADViewer), {
   ssr: false,
@@ -35,11 +36,16 @@ export function CADUploader() {
     formData.append("file", file);
 
     try {
-      // Note: We need to handle auth token if implemented
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("You must be logged in to upload a file.");
+      }
+
       const response = await axios.post(`${API_BASE_URL}/api/v1/cad/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${session.access_token}`
         },
       });
 
