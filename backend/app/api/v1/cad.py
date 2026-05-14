@@ -4,28 +4,53 @@ from app.auth.utils import get_current_user
 from app.core.config import settings
 import json
 import logging
+import os
+import tempfile
+from app.models.design_classifier import DesignClassifier
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 # ── Prompt shared between providers ────────────────────────────────────────────
-def _build_prompt(filename: str, content_type: str, size: int) -> str:
-    return f"""You are a manufacturing expert and cost estimator.
-Analyze this CAD file metadata:
+def _build_prompt(filename: str, content_type: str, size: int, geo_features: dict = None) -> str:
+    geo_str = ""
+    if geo_features:
+        geo_str = f"""
+Geometric Features:
+- Dimensions: {geo_features.get('dimensions')}
+- Volume: {geo_features.get('volume'):.2f} mm³
+- Surface Area: {geo_features.get('surface_area'):.2f} mm²
+- Complexity Ratio: {geo_features.get('complexity_ratio'):.2f}
+- Aspect Ratios: {geo_features.get('aspect_ratio_main'):.2f}, {geo_features.get('aspect_ratio_secondary'):.2f}
+- Symmetry Score: {geo_features.get('symmetry_score'):.2f}
+- Triangle Count: {geo_features.get('triangle_count')}
+"""
+
+    return f"""You are a manufacturing expert and product designer.
+Analyze this CAD file and its geometric features:
 Filename: {filename}
 Type: {content_type}
 Size: {size} bytes
+{geo_str}
+
+Tasks:
+1. Identify the 'design_type' (e.g., bracket, gear, enclosure, sofa, table, decorative).
+2. Categorize it into 'design_category' (e.g., mechanical, structural, furniture).
+3. Evaluate manufacturing feasibility and cost.
 
 Respond ONLY in JSON format:
 {{
+  "design_type": "string",
+  "design_category": "string",
+  "confidence_score": 0.0-1.0,
   "feasibility_score": 0-100,
   "complexity": "simple|moderate|complex",
   "recommended_process": "CNC|3D_FDM|3D_SLA|laser_cut|injection_mold",
   "materials": ["aluminum", "pla", "steel"],
   "estimated_cost_usd": {{ "low": 50, "mid": 150, "high": 300 }},
   "estimated_hours": 5,
-  "notes": "Estimated based on file metadata.",
+  "notes": "string",
   "warnings": []
 }}"""
 
@@ -59,9 +84,9 @@ def _analyze_with_groq(prompt: str) -> dict:
     return json.loads(response.choices[0].message.content)
 
 
-def _analyze_cad_metadata(filename: str, content_type: str, size: int) -> dict:
+def _analyze_cad_metadata(filename: str, content_type: str, size: int, geo_features: dict = None) -> dict:
     """Try Gemini first; fall back to Groq if Gemini is unavailable or errors."""
-    prompt = _build_prompt(filename, content_type, size)
+    prompt = _build_prompt(filename, content_type, size, geo_features)
 
     if settings.GEMINI_API_KEY:
         try:
@@ -104,15 +129,32 @@ async def upload_and_analyze_cad(
         )
         file_url = supabase.storage.from_("cad-files").get_public_url(file_path)
 
-        # 2. AI Analysis (Gemini → Groq fallback)
+        # 2. Extract Geometric Features (if STL)
+        geo_features = None
+        if file.filename.lower().endswith(".stl"):
+            try:
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".stl") as tmp:
+                    tmp.write(file_content)
+                    tmp_path = tmp.name
+                
+                classifier = DesignClassifier()
+                triangles = classifier.parse_stl(tmp_path)
+                geo_features = classifier.extract_features(triangles)
+                
+                os.unlink(tmp_path)
+            except Exception as e:
+                logger.error(f"Geometric extraction failed: {e}")
+
+        # 3. AI Analysis (Gemini → Groq fallback)
         analysis_result = _analyze_cad_metadata(
             filename=file.filename,
             content_type=file.content_type,
             size=len(file_content),
+            geo_features=geo_features
         )
 
-        # 3. Store in 'cad_files' table
-        db_res = supabase.table("cad_files").insert({
+        # 4. Store in 'cad_files' table
+        cad_data = {
             "client_id": current_user["id"],
             "file_name": file.filename,
             "file_url": file_url,
@@ -124,9 +166,25 @@ async def upload_and_analyze_cad(
             "estimated_cost_high": analysis_result.get("estimated_cost_usd", {}).get("high"),
             "process_recommendation": analysis_result.get("recommended_process"),
             "status": "analyzed",
-        }).execute()
+        }
+        
+        db_res = supabase.table("cad_files").insert(cad_data).execute()
+        cad_record = db_res.data[0]
 
-        return db_res.data[0]
+        # 5. Store Design Classification if available
+        if analysis_result.get("design_type"):
+            try:
+                supabase.table("design_classifications").insert({
+                    "cad_file_id": cad_record["id"],
+                    "design_type": analysis_result.get("design_type"),
+                    "design_category": analysis_result.get("design_category"),
+                    "confidence_score": analysis_result.get("confidence_score", 0.0),
+                    "geometric_features": geo_features,
+                }).execute()
+            except Exception as e:
+                logger.error(f"Failed to store design classification: {e}")
+
+        return cad_record
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
