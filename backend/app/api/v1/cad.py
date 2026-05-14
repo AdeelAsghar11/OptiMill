@@ -7,6 +7,7 @@ import logging
 import os
 import tempfile
 from app.models.design_classifier import DesignClassifier
+from app.models.material_extractor import MaterialExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -181,8 +182,16 @@ async def upload_and_analyze_cad(
                     "confidence_score": analysis_result.get("confidence_score", 0.0),
                     "geometric_features": geo_features,
                 }).execute()
+                
+                # Trigger Material Inference
+                extractor = MaterialExtractor()
+                await extractor.infer_materials(
+                    cad_file_id=cad_record["id"],
+                    design_type=analysis_result.get("design_type"),
+                    geo_features=geo_features or {}
+                )
             except Exception as e:
-                logger.error(f"Failed to store design classification: {e}")
+                logger.error(f"Failed to store design classification or materials: {e}")
 
         return cad_record
 
@@ -202,5 +211,38 @@ async def get_cad_analysis(file_id: str, current_user: dict = Depends(get_curren
             .execute()
         )
         return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{file_id}/materials")
+async def get_cad_materials(file_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Retrieves and categorizes material requirements for a CAD file.
+    """
+    try:
+        res = (
+            supabase.table("material_requirements")
+            .select("*")
+            .eq("cad_file_id", file_id)
+            .execute()
+        )
+        
+        materials = res.data
+        categorized = {
+            "structural": [],
+            "aesthetic": [],
+            "fastening": [],
+            "other": []
+        }
+        
+        for mat in materials:
+            cat = mat.get("material_category", "other").lower()
+            if cat in categorized:
+                categorized[cat].append(mat)
+            else:
+                categorized["other"].append(mat)
+                
+        return categorized
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
