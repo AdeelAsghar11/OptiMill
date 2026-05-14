@@ -58,7 +58,7 @@ async def discover_shops(
     """Discover shops filtered by capability, material, city, or rating."""
     try:
         query = supabase.table("shops").select(
-            "id, name, description, location_city, location_country, capabilities, materials, hourly_rate, rating, is_verified"
+            "id, name, description, location_city, location_country, capabilities, materials, hourly_rate, rating, is_verified, latitude, longitude"
         )
 
         if city:
@@ -71,7 +71,16 @@ async def discover_shops(
             query = query.contains("materials", [material])
 
         res = query.execute()
-        return res.data
+        shops = res.data
+        
+        # Add mock lat/lon if missing for map demo
+        import random
+        for s in shops:
+            if not s.get("latitude"):
+                s["latitude"] = 34.05 + (random.random() - 0.5) * 0.1 # Mock near LA
+                s["longitude"] = -118.24 + (random.random() - 0.5) * 0.1
+                
+        return shops
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

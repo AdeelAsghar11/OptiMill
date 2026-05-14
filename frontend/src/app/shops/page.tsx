@@ -1,8 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Search, SlidersHorizontal, Loader2, Factory } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, SlidersHorizontal, Loader2, Factory, Map as MapIcon, LayoutGrid } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ShopMap = dynamic(() => import("@/components/maps/ShopMap").then(mod => mod.ShopMap), {
+  ssr: false,
+  loading: () => <div className="h-[500px] w-full bg-slate-900 animate-pulse rounded-3xl" />
+});
 import axios from "axios";
 import { ShopCard } from "@/components/shops/ShopCard";
 
@@ -18,6 +24,7 @@ export default function ShopsPage() {
   const [selectedCap, setSelectedCap] = useState<string | null>(null);
   const [selectedMat, setSelectedMat] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
 
   const fetchShops = async () => {
     setLoading(true);
@@ -143,7 +150,32 @@ export default function ShopsPage() {
         </motion.div>
       )}
 
-      {/* Results */}
+      {/* View Toggle & Results Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <p className="text-slate-500 text-sm">
+          <span className="text-white font-bold">{filtered.length}</span> shops found
+        </p>
+        <div className="flex bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              viewMode === "grid" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
+            }`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            Grid View
+          </button>
+          <button
+            onClick={() => setViewMode("map")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              viewMode === "map" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
+            }`}
+          >
+            <MapIcon className="w-3.5 h-3.5" />
+            Map View
+          </button>
+        </div>
+      </div>
       {loading ? (
         <div className="flex items-center justify-center py-32">
           <div className="flex items-center gap-3 text-slate-400">
@@ -158,16 +190,30 @@ export default function ShopsPage() {
           <p className="text-slate-600 text-sm mt-2">Try adjusting your filters or search term.</p>
         </div>
       ) : (
-        <div>
-          <p className="text-slate-500 text-sm mb-6">
-            <span className="text-white font-bold">{filtered.length}</span> shops found
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filtered.map((shop, i) => (
-              <ShopCard key={shop.id} shop={shop} index={i} />
-            ))}
-          </div>
-        </div>
+        <AnimatePresence mode="wait">
+          {viewMode === "grid" ? (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+            >
+              {filtered.map((shop, i) => (
+                <ShopCard key={shop.id} shop={shop} index={i} />
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="map"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ShopMap shops={filtered} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       )}
     </main>
   );
