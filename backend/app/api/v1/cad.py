@@ -8,6 +8,7 @@ import os
 import tempfile
 from app.models.design_classifier import DesignClassifier
 from app.models.material_extractor import MaterialExtractor
+from app.services.recommendation_engine import RecommendationEngine
 
 logger = logging.getLogger(__name__)
 
@@ -211,6 +212,19 @@ async def get_cad_analysis(file_id: str, current_user: dict = Depends(get_curren
             .execute()
         )
         return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{file_id}/recommendations")
+async def get_shop_recommendations(file_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Returns top 5 recommended shops for the given CAD file.
+    """
+    try:
+        engine = RecommendationEngine()
+        recommendations = await engine.get_top_recommendations(file_id)
+        return recommendations
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
