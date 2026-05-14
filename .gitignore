@@ -1,4 +1,6 @@
+# ───────────────────────────────────────────
 # Python
+# ───────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,7 +12,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -22,23 +23,121 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Environments
-.env
-.venv
-env/
+# Virtual environments
+.venv/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
 
-# IDEs
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# mypy / type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# ───────────────────────────────────────────
+# Environment & Secrets — NEVER commit these
+# ───────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+secrets/
+
+# ───────────────────────────────────────────
+# Node / Next.js / Frontend
+# ───────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dist/
+frontend/.cache/
+frontend/.turbo/
+frontend/build/
+frontend/storybook-static/
+
+# Next.js specific
+.next/
+out/
+
+# npm / yarn / pnpm
+node_modules/
+.npm
+.yarn/
+.pnp.*
+yarn-error.log*
+npm-debug.log*
+pnpm-debug.log*
+
+# ───────────────────────────────────────────
+# IDEs & Editors
+# ───────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
 
-# Project specific
-backend/__pycache__/
-frontend/node_modules/
-frontend/dist/
+# ───────────────────────────────────────────
+# OS-generated files
+# ───────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ───────────────────────────────────────────
+# Docker
+# ───────────────────────────────────────────
+docker-compose.override.yml
+
+# ───────────────────────────────────────────
+# Logs & runtime artifacts
+# ───────────────────────────────────────────
+*.log
+logs/
 data/*.log
+data/*.db
+*.sqlite
+*.sqlite3
+
+# ───────────────────────────────────────────
+# Uploads / generated files
+# ───────────────────────────────────────────
+uploads/
+media/
+static/collected/
+
+# ───────────────────────────────────────────
+# Stripe / payment test artifacts
+# ───────────────────────────────────────────
+.stripe/
+
+# ───────────────────────────────────────────
+# Misc
+# ───────────────────────────────────────────
+*.bak
+*.tmp
+*.orig
+*.patch

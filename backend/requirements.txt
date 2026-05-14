@@ -8,5 +8,6 @@ pytest
 python-dotenv
 supabase
 email-validator
+google-generativeai
 openai
 python-multipart
