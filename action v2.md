@@ -1,6 +1,6 @@
 # OptiMill — Extended Implementation Action Plan (v1.2)
 
-> Stack: React (Vite) · FastAPI · Supabase · Gemini/Groq · Stripe
+> Stack: React (Vite) · FastAPI · Supabase · OpenAI · Stripe
 > Architecture: Modular Marketplace with AI Analysis, Intelligent Recommendations & Escrow Payments
 
 ## Workflow Rules
@@ -13,7 +13,7 @@
 ## Phase 0 — Project Bootstrap ✅ (Complete)
 
 - `t00` Initialize project structure (Frontend: Vite/React, Backend: FastAPI)
-- `t01` Configure `.env` with Supabase, Gemini, and Stripe keys
+- `t01` Configure `.env` with Supabase, OpenAI, and Stripe keys
 - `t02` Set up Supabase Client in `frontend/src/lib/supabase.js` and `backend/app/supabase.py`
 - `t03` Update `requirements.txt` (Backend) and `package.json` (Frontend) with TRD dependencies
 - `t04` Initialize Docker Compose with API, Redis, and Worker (for long-running AI tasks)
@@ -33,7 +33,7 @@
 
 - `t09` Create Supabase Storage bucket `cad-files` with appropriate security policies
 - `t10` Implement CAD file upload with 3D preview using `@react-three/fiber`
-- `t11` Create `POST /analyze` endpoint (or Supabase Edge Function) using Gemini 1.5 Flash to analyze CAD metadata
+- `t11` Create `POST /analyze` endpoint (or Supabase Edge Function) using OpenAI GPT-4o to analyze CAD metadata
 - `t12` Parse AI response: `feasibility_score`, `complexity`, `cost_range`, `process_recommendation`
 - `t13` Store analysis results in `cad_files` table and return to frontend
 
@@ -99,7 +99,7 @@ CREATE TABLE design_classifications (
   design_category VARCHAR(50),  -- furniture, mechanical, structural, etc.
   confidence_score FLOAT CHECK (confidence_score >= 0 AND confidence_score <= 1),
   geometric_features JSONB,  -- { aspect_ratio, volume, symmetry, ... }
-  vision_analysis JSONB,  -- AI Vision response
+  vision_analysis JSONB,  -- Claude Vision response
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -140,16 +140,16 @@ CREATE INDEX idx_design_material_type ON design_material_mappings(design_type);
   - Return geometric feature vector
 
 - `t35` Extend `POST /analyze` endpoint to include design classification
-  - Call Gemini Vision API on 3D preview image with prompt: "What type of product is this? (sofa, table, bracket, etc.)"
-  - Parse confidence from AI response
+  - Call Claude Vision API on 3D preview image with prompt: "What type of product is this? (sofa, table, bracket, etc.)"
+  - Parse confidence from Claude response
   - Combine geometric + vision scores into final classification
   - Store in `design_classifications` table
 
 - `t36` Create `MaterialExtractor` module in `backend/app/models/material_extractor.py`
   - Build design-to-material knowledge graph (populate `design_material_mappings`)
   - Implement semantic inference: given design type + geometry, infer materials
-  - Call Gemini: "For a [design_type] design with these dimensions, what materials are typically needed?"
-  - Parse AI response for material list with quantities
+  - Call Claude: "For a [design_type] design with these dimensions, what materials are typically needed?"
+  - Parse Claude response for material list with quantities
   - Store in `material_requirements` table
 
 - `t37` Create `POST /cad/:id/materials` endpoint
@@ -170,7 +170,7 @@ CREATE INDEX idx_design_material_type ON design_material_mappings(design_type);
   - Add "Find Supplier" CTA for each material (prepares for Phase 10)
 
 - `t40` Build Material Inference Details modal
-  - Show Gemini's reasoning: "Why these materials?"
+  - Show Claude's reasoning: "Why these materials?"
   - Allow user to add/edit materials if needed
   - Persist user overrides to `material_requirements` table
 
@@ -233,7 +233,7 @@ CREATE INDEX idx_recommendation_composite ON recommendation_scores(final_composi
 **Backend Tasks:**
 
 - `t45` Create `ShopRecommender` module in `backend/app/models/shop_recommender.py`
-  - Implement multi-factor scoring algorithm
+  - Implement multi-factor scoring algorithm (as detailed in action.md Problem 3)
   - Function signatures:
     ```python
     calculate_capability_score(shop_specializations, design_type) -> float
@@ -701,6 +701,6 @@ git push origin main
 
 ---
 
-**Last Updated:** 2026-05-15
+**Last Updated:** [Date]
 **Next Review:** Weekly team standup
 **Version:** 1.2 (Extended with Algorithmic Phases)

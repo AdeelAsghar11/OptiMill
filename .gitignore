@@ -141,3 +141,4 @@ static/collected/
 *.tmp
 *.orig
 *.patch
+"action v2.md"
