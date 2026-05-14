@@ -38,3 +38,27 @@ async def create_or_update_rule(rule: RuleSchema):
         return res.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/users")
+async def admin_get_users(current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        res = supabase.table("profiles").select("*").order("created_at", desc=True).execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/shops")
+async def admin_get_shops(current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        res = supabase.table("shops").select("*, profiles!owner_id(full_name, email)").order("created_at", desc=True).execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.patch("/shops/{shop_id}/verify")
+async def verify_shop(shop_id: str, verified: bool, current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        res = supabase.table("shops").update({"verified": verified}).eq("id", shop_id).execute()
+        return res.data[0]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

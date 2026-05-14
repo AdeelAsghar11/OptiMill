@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Cpu, Upload, Store, LayoutDashboard, Package, LogOut } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { supabase } from "@/lib/supabase";
+import { NotificationBell } from "./notifications/NotificationBell";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -71,6 +72,7 @@ export function Navbar() {
               <span className="text-sm font-medium text-slate-300">
                 {user.email}
               </span>
+              <NotificationBell />
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors font-medium"

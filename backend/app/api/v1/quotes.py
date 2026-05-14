@@ -3,6 +3,7 @@ from app.supabase import supabase
 from app.auth.utils import get_current_user, require_role
 from pydantic import BaseModel
 from typing import Optional
+from app.core.notifications import create_notification
 
 router = APIRouter()
 
@@ -41,6 +42,18 @@ async def request_quote(data: QuoteRequest, current_user: dict = Depends(require
             "message": data.message,
             "status": "pending",
         }).execute()
+        
+        # t31: Notify shop owner
+        shop = supabase.table("shops").select("owner_id, name").eq("id", data.shop_id).single().execute()
+        if shop.data:
+            await create_notification(
+                user_id=shop.data["owner_id"],
+                type="quote_received",
+                title="New Quote Request",
+                body=f"Client {current_user.get('email')} requested a quote for {cad.data['file_name']}.",
+                data={"request_id": res.data[0]["id"], "cad_file_id": data.cad_file_id}
+            )
+
         return res.data[0]
     except HTTPException:
         raise
@@ -84,6 +97,18 @@ async def submit_quote(data: QuoteSubmit, current_user: dict = Depends(require_r
             "notes": data.notes,
             "status": "pending",
         }).execute()
+
+        # t31: Notify client
+        req = supabase.table("quote_requests").select("client_id, shops(name)").eq("id", data.request_id).single().execute()
+        if req.data:
+            await create_notification(
+                user_id=req.data["client_id"],
+                type="quote_received",
+                title="Quote Received",
+                body=f"Shop '{req.data['shops']['name']}' submitted a quote for ${data.amount}.",
+                data={"quote_id": res.data[0]["id"], "request_id": data.request_id}
+            )
+
         return res.data[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -131,6 +156,17 @@ async def accept_quote(quote_id: str, current_user: dict = Depends(require_role(
 
         # Mark quote as accepted
         supabase.table("quotes").update({"status": "accepted"}).eq("id", quote_id).execute()
+
+        # t31: Notify shop
+        shop = supabase.table("shops").select("owner_id").eq("id", req.get("shop_id")).single().execute()
+        if shop.data:
+            await create_notification(
+                user_id=shop.data["owner_id"],
+                type="order_placed",
+                title="Quote Accepted!",
+                body=f"Client {current_user.get('email')} accepted your quote. New order created.",
+                data={"order_id": order_res.data[0]["id"], "quote_id": quote_id}
+            )
 
         return order_res.data[0]
     except HTTPException:

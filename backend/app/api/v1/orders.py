@@ -3,6 +3,7 @@ from app.supabase import supabase
 from app.auth.utils import get_current_user, require_role
 from pydantic import BaseModel
 from typing import Optional
+from app.core.notifications import create_notification
 
 router = APIRouter()
 
@@ -75,6 +76,26 @@ async def update_order_status(order_id: str, body: StatusUpdate, current_user: d
             )
 
         res = supabase.table("orders").update({"status": body.status}).eq("id", order_id).execute()
+
+        # t31: Notify other party
+        order_full = supabase.table("orders").select("client_id, shop_id").eq("id", order_id).single().execute()
+        if order_full.data:
+            # If current user is shop, notify client. If current user is client, notify shop owner.
+            is_shop = current_user["id"] == order_full.data["shop_id"] # This might be wrong if shop_id is shop uuid not owner uuid
+            # Actually shop_id in 'orders' is UUID of 'shops' table. We need shop.owner_id.
+            
+            shop = supabase.table("shops").select("owner_id").eq("id", order_full.data["shop_id"]).single().execute()
+            target_id = order_full.data["client_id"] if current_user["id"] == shop.data.get("owner_id") else shop.data.get("owner_id")
+            
+            if target_id:
+                await create_notification(
+                    user_id=target_id,
+                    type="order_update",
+                    title="Order Status Updated",
+                    body=f"Order #{order_id[:8]} is now '{body.status}'.",
+                    data={"order_id": order_id, "status": body.status}
+                )
+
         return res.data[0]
     except HTTPException:
         raise

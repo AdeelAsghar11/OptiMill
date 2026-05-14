@@ -10,4 +10,5 @@ supabase
 email-validator
 google-generativeai
 openai
+stripe
 python-multipart

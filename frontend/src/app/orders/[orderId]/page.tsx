@@ -8,6 +8,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { LiveChat } from "@/components/chat/LiveChat";
 import { MeetingScheduler } from "@/components/meetings/MeetingScheduler";
+import { PaymentButton } from "@/components/orders/PaymentButton";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -56,16 +58,29 @@ export default function OrderDetailPage() {
   const orderId = params?.orderId as string;
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  // In a real app, get this from your auth context
-  const MOCK_USER_ID = "00000000-0000-0000-0000-000000000000";
+  const { user } = useAuthStore();
+  const currentUserId = user?.id;
 
-  useEffect(() => {
-    if (!orderId) return;
+  const fetchOrder = () => {
     axios.get(`${API_BASE_URL}/api/v1/orders/${orderId}`)
       .then((r) => setOrder(r.data))
       .catch(() => setOrder(null))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    if (!orderId) return;
+    fetchOrder();
   }, [orderId]);
+
+  const releasePayment = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/api/v1/payments/release/${orderId}`);
+      fetchOrder();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   if (loading) {
     return (
@@ -113,14 +128,27 @@ export default function OrderDetailPage() {
             ))}
           </div>
         </div>
-        <OrderTimeline status={order.status} />
+        <div className="flex items-center justify-between gap-4 mt-6">
+          <OrderTimeline status={order.status} />
+          {order.status === "pending" && (
+            <PaymentButton orderId={orderId} amount={order.amount} />
+          )}
+          {order.status === "shipped" && (
+            <button 
+              onClick={releasePayment}
+              className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-xl font-bold text-white shadow-lg shadow-green-500/20 transition-all"
+            >
+              Release Funds to Shop
+            </button>
+          )}
+        </div>
       </motion.div>
 
       {/* Chat + Meetings */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-3">
           <h2 className="font-bold mb-4 text-slate-300">Order Chat</h2>
-          <LiveChat orderId={orderId} currentUserId={MOCK_USER_ID} />
+          <LiveChat orderId={orderId} currentUserId={currentUserId || ""} />
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="lg:col-span-2">
           <h2 className="font-bold mb-4 text-slate-300">Consultation Meetings</h2>
