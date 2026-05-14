@@ -70,3 +70,35 @@ async def get_knowledge_base(current_user: dict = Depends(require_role(["admin"]
         return res.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/recommendation-stats")
+async def get_recommendation_stats(current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        # Calculate conversion rate: quotes accepted from recommendations vs total
+        total_orders_res = supabase.table("orders").select("id, quote_id").execute()
+        total_orders = len(total_orders_res.data)
+        
+        if total_orders == 0:
+            return {"conversion_rate": 0, "total_recommended_orders": 0, "total_orders": 0}
+            
+        quote_ids = [o["quote_id"] for o in total_orders_res.data]
+        
+        # Check which quotes came from recommended shops
+        # This requires matching quote_id -> request_id -> (cad_file_id, shop_id) -> recommendation_scores
+        recommended_orders = 0
+        for order in total_orders_res.data:
+            quote = supabase.table("quotes").select("request_id").eq("id", order["quote_id"]).single().execute()
+            if quote.data:
+                request = supabase.table("quote_requests").select("cad_file_id, shop_id").eq("id", quote.data["request_id"]).single().execute()
+                if request.data:
+                    score = supabase.table("recommendation_scores").select("total_score").eq("cad_file_id", request.data["cad_file_id"]).eq("shop_id", request.data["shop_id"]).execute()
+                    if score.data:
+                        recommended_orders += 1
+                        
+        return {
+            "conversion_rate": round(recommended_orders / total_orders, 2),
+            "total_recommended_orders": recommended_orders,
+            "total_orders": total_orders
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

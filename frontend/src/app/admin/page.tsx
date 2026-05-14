@@ -16,6 +16,7 @@ export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [shops, setShops] = useState([]);
   const [mappings, setMappings] = useState([]);
+  const [stats, setStats] = useState({ conversion_rate: 0, total_recommended_orders: 0, total_orders: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +29,8 @@ export default function AdminPanel() {
       if (activeTab === "overview" || activeTab === "engine") {
         const res = await axios.get(`${API_BASE_URL}/api/v1/admin/rules`);
         setRules(res.data);
+        const statsRes = await axios.get(`${API_BASE_URL}/api/v1/admin/recommendation-stats`);
+        setStats(statsRes.data);
       }
       if (activeTab === "users") {
         const res = await axios.get(`${API_BASE_URL}/api/v1/admin/users`);
@@ -99,7 +102,7 @@ export default function AdminPanel() {
           >
             <StatCard title="Total Users" value={users.length || "—"} icon={Users} color="text-blue-400" />
             <StatCard title="Active Shops" value={shops.length || "—"} icon={Store} color="text-indigo-400" />
-            <StatCard title="Risk Rules" value={rules.length || "—"} icon={ShieldCheck} color="text-emerald-400" />
+            <StatCard title="AI Conversion" value={`${(stats.conversion_rate * 100).toFixed(0)}%`} icon={Activity} color="text-emerald-400" />
           </motion.div>
         )}
 
