@@ -14,6 +14,12 @@ class QuoteRequest(BaseModel):
     message: Optional[str] = None
     quantity: int = 1
 
+class MultiQuoteRequest(BaseModel):
+    cad_file_id: str
+    shop_ids: list[str]
+    message: Optional[str] = None
+    quantity: int = 1
+
 class QuoteSubmit(BaseModel):
     request_id: str
     amount: float
@@ -55,6 +61,45 @@ async def request_quote(data: QuoteRequest, current_user: dict = Depends(require
             )
 
         return res.data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/multi-request")
+async def request_multi_quote(data: MultiQuoteRequest, current_user: dict = Depends(require_role(["client", "admin"]))):
+    """Client requests quotes from multiple shops for the same CAD file."""
+    try:
+        # Verify the CAD file belongs to the client
+        cad = supabase.table("cad_files").select("id, file_name").eq("id", data.cad_file_id).eq("client_id", current_user["id"]).single().execute()
+        if not cad.data:
+            raise HTTPException(status_code=404, detail="CAD file not found or access denied.")
+
+        results = []
+        for shop_id in data.shop_ids:
+            res = supabase.table("quote_requests").insert({
+                "client_id": current_user["id"],
+                "shop_id": shop_id,
+                "cad_file_id": data.cad_file_id,
+                "quantity": data.quantity,
+                "message": data.message,
+                "status": "pending",
+            }).execute()
+            
+            # Notify shop owner
+            shop = supabase.table("shops").select("owner_id, name").eq("id", shop_id).single().execute()
+            if shop.data:
+                await create_notification(
+                    user_id=shop.data["owner_id"],
+                    type="quote_received",
+                    title="New Multi-Quote Request",
+                    body=f"Client {current_user.get('email')} requested a quote for {cad.data['file_name']}.",
+                    data={"request_id": res.data[0]["id"], "cad_file_id": data.cad_file_id}
+                )
+            results.append(res.data[0])
+
+        return results
     except HTTPException:
         raise
     except Exception as e:

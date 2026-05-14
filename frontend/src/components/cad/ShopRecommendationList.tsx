@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Store, Star, MapPin, CheckCircle, ChevronRight, Loader2 } from "lucide-react";
+import { Store, Star, MapPin, CheckCircle, ChevronRight, Loader2, Send, Zap } from "lucide-react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -28,6 +28,8 @@ interface Recommendation {
 export function ShopRecommendationList({ cadFileId }: { cadFileId: string }) {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [requesting, setRequesting] = useState(false);
+  const [requestSuccess, setRequestSuccess] = useState(false);
 
   useEffect(() => {
     async function fetchRecommendations() {
@@ -47,6 +49,33 @@ export function ShopRecommendationList({ cadFileId }: { cadFileId: string }) {
     }
     fetchRecommendations();
   }, [cadFileId]);
+
+  const handleMultiRequest = async () => {
+    if (recommendations.length === 0) return;
+    
+    setRequesting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const top3Ids = recommendations.slice(0, 3).map(s => s.id);
+      
+      await axios.post(`${API_BASE_URL}/api/v1/quotes/multi-request`, {
+        cad_file_id: cadFileId,
+        shop_ids: top3Ids,
+        quantity: 1,
+        message: "Requesting quote based on AI shop recommendation."
+      }, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      setRequestSuccess(true);
+    } catch (e) {
+      console.error("Multi-quote request failed:", e);
+    } finally {
+      setRequesting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -72,7 +101,28 @@ export function ShopRecommendationList({ cadFileId }: { cadFileId: string }) {
           <Store className="w-5 h-5 text-indigo-400" />
           Recommended Fabricators
         </h4>
-        <span className="text-xs text-slate-500">Top {recommendations.length} Matches</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate-500">Top {recommendations.length} Matches</span>
+          {!requestSuccess ? (
+            <button
+              onClick={handleMultiRequest}
+              disabled={requesting}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-indigo-500/20"
+            >
+              {requesting ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Zap className="w-3 h-3 fill-white" />
+              )}
+              Request Top 3 Quotes
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-400/20">
+              <CheckCircle className="w-3 h-3" />
+              Requests Sent
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-4">
