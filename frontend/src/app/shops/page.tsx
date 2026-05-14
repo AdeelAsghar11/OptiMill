@@ -11,6 +11,7 @@ const ShopMap = dynamic(() => import("@/components/maps/ShopMap").then(mod => mo
 });
 import axios from "axios";
 import { ShopCard } from "@/components/shops/ShopCard";
+import { calculateDistance } from "@/lib/geo";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -26,6 +27,7 @@ export default function ShopsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
   const [geoBounds, setGeoBounds] = useState<any>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
   const fetchShops = async () => {
     setLoading(true);
@@ -51,6 +53,12 @@ export default function ShopsPage() {
 
   useEffect(() => {
     fetchShops();
+    
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+      });
+    }
   }, [selectedCap, selectedMat, geoBounds]);
 
   const handleSearchArea = (bounds: any) => {
@@ -61,7 +69,14 @@ export default function ShopsPage() {
     s.name.toLowerCase().includes(search.toLowerCase()) ||
     s.description?.toLowerCase().includes(search.toLowerCase()) ||
     s.location_city?.toLowerCase().includes(search.toLowerCase())
-  );
+  ).sort((a, b) => {
+    if (userLocation && a.latitude && b.latitude) {
+      const distA = calculateDistance(userLocation.lat, userLocation.lon, a.latitude, a.longitude);
+      const distB = calculateDistance(userLocation.lat, userLocation.lon, b.latitude, b.longitude);
+      return distA - distB;
+    }
+    return 0;
+  });
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-12">
@@ -211,7 +226,7 @@ export default function ShopsPage() {
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
             >
               {filtered.map((shop, i) => (
-                <ShopCard key={shop.id} shop={shop} index={i} />
+                <ShopCard key={shop.id} shop={shop} index={i} userLocation={userLocation} />
               ))}
             </motion.div>
           ) : (

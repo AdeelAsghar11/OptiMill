@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MapPin, Star, Wrench, CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { calculateDistance } from "@/lib/geo";
 
 interface Shop {
   id: string;
@@ -16,14 +17,20 @@ interface Shop {
   hourly_rate?: number;
   rating?: number;
   is_verified?: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface ShopCardProps {
   shop: Shop;
   index: number;
+  userLocation?: { lat: number; lon: number } | null;
 }
 
-export function ShopCard({ shop, index }: ShopCardProps) {
+export function ShopCard({ shop, index, userLocation }: ShopCardProps) {
+  const distance = (userLocation && shop.latitude && shop.longitude)
+    ? calculateDistance(userLocation.lat, userLocation.lon, shop.latitude, shop.longitude)
+    : null;
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -48,6 +55,11 @@ export function ShopCard({ shop, index }: ShopCardProps) {
               <p className="text-slate-500 text-xs flex items-center gap-1 mt-0.5">
                 <MapPin className="w-3 h-3" />
                 {[shop.location_city, shop.location_country].filter(Boolean).join(", ")}
+                {distance !== null && (
+                  <span className="ml-1 text-blue-400 font-bold">
+                    • {distance.toFixed(1)} km away
+                  </span>
+                )}
               </p>
             )}
           </div>
