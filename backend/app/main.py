@@ -14,6 +14,8 @@ from app.api.v1.quotes import router as quotes_router
 from app.api.v1.messages import router as messages_router
 from app.api.v1.meetings import router as meetings_router
 from app.api.v1.payments import router as payments_router
+from app.api.v1.locations import router as locations_router
+from app.api.v1.external_suppliers import router as external_suppliers_router
 
 app = FastAPI(
     title="OptiMill: AI-Powered CAD Marketplace",
@@ -44,6 +46,8 @@ app.include_router(quotes_router, prefix="/api/v1/quotes", tags=["Quoting & Orde
 app.include_router(messages_router, prefix="/api/v1/messages", tags=["Messaging"])
 app.include_router(meetings_router, prefix="/api/v1/meetings", tags=["Meetings"])
 app.include_router(payments_router, prefix="/api/v1/payments", tags=["Payments"])
+app.include_router(locations_router, prefix="/api/v1/locations", tags=["Geolocation"])
+app.include_router(external_suppliers_router, prefix="/api/v1/external-suppliers", tags=["External Suppliers"])
 
 @app.get("/")
 async def root():

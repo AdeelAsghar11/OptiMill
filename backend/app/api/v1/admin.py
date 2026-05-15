@@ -102,3 +102,12 @@ async def get_recommendation_stats(current_user: dict = Depends(require_role(["a
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/user-locations")
+async def admin_get_user_locations(current_user: dict = Depends(require_role(["admin"]))):
+    try:
+        res = supabase.table("user_locations").select("*").execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

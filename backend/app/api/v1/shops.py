@@ -3,6 +3,7 @@ from app.supabase import supabase
 from app.auth.utils import get_current_user, require_role
 from pydantic import BaseModel
 from typing import List, Optional
+from app.utils.geospatial import haversine_distance, ring_based_expansion
 
 router = APIRouter()
 
@@ -89,6 +90,58 @@ async def discover_shops(
                 s["longitude"] = -118.24 + (random.random() - 0.5) * 0.1
                 
         return shops
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- t54: Nearby Shops (Radius Based) ---
+@router.get("/nearby")
+async def get_nearby_shops(
+    lat: float,
+    lon: float,
+    radius: float = 10.0, # km
+):
+    """Get shops within a specific radius using Haversine distance."""
+    try:
+        # For a production app with millions of shops, use PostGIS 'location' column
+        # For now, we'll fetch all shops and filter in memory since the shop count is low
+        res = supabase.table("shops").select("*").execute()
+        shops = res.data
+        
+        nearby_shops = []
+        for shop in shops:
+            if shop.get("latitude") and shop.get("longitude"):
+                dist = haversine_distance(lat, lon, float(shop["latitude"]), float(shop["longitude"]))
+                if dist <= radius:
+                    shop["distance_km"] = round(dist, 2)
+                    nearby_shops.append(shop)
+        
+        # Sort by distance
+        nearby_shops.sort(key=lambda x: x["distance_km"])
+        return nearby_shops
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- t55: Ring-Based Expansion Search ---
+@router.get("/nearby-expanded")
+async def get_nearby_expanded(
+    lat: float,
+    lon: float,
+    min_results: int = 5
+):
+    """Get shops using ring-based expansion (5km, 15km, 50km, etc.)."""
+    try:
+        res = supabase.table("shops").select("*").execute()
+        shops = res.data
+        
+        # Use our utility to calculate rings and distance
+        # Note: In a real app, this would be a more complex SQL query or multiple queries
+        processed_shops = ring_based_expansion(lat, lon, shops, min_results)
+        
+        # Filter to return only those that fall within the expansion logic (or all if requested)
+        # For now, we return all sorted by distance with ring info
+        return processed_shops
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, SlidersHorizontal, Loader2, Factory, Map as MapIcon, LayoutGrid } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2, Factory, Map as MapIcon, LayoutGrid, X, Sparkles, Target, Layers } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const ShopMap = dynamic(() => import("@/components/maps/ShopMap").then(mod => mod.ShopMap), {
   ssr: false,
-  loading: () => <div className="h-[500px] w-full bg-slate-900 animate-pulse rounded-3xl" />
+  loading: () => <div className="h-[600px] w-full glass rounded-[2.5rem] animate-pulse flex items-center justify-center text-slate-500 font-black uppercase tracking-widest text-xs">Initializing Neural Map...</div>
 });
 import axios from "axios";
 import { ShopCard } from "@/components/shops/ShopCard";
@@ -79,168 +79,233 @@ export default function ShopsPage() {
   });
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-12">
-      {/* Header */}
-      <div className="mb-12">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 mb-3"
-        >
-          <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
-            <Factory className="w-5 h-5 text-blue-400" />
-          </div>
-          <span className="text-blue-400 text-sm font-semibold uppercase tracking-widest">Shop Discovery</span>
-        </motion.div>
-        <motion.h1
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-4xl font-bold tracking-tight mb-3"
-        >
-          Find the right <span className="text-blue-500">manufacturing partner</span>
-        </motion.h1>
-        <p className="text-slate-400 max-w-xl">
-          Browse verified CNC and 3D printing shops. Filter by capabilities, materials, and location to find your perfect match.
-        </p>
-      </div>
-
-      {/* Search & Filter Bar */}
-      <div className="glass rounded-2xl p-4 mb-8 flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search shops by name or location..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-transparent pl-10 pr-4 py-3 text-sm placeholder-slate-600 outline-none focus:ring-0"
-          />
+    <main className="max-w-7xl mx-auto px-6 py-12 space-y-12 pb-32">
+      {/* Header - HCI: Impact and Clarity */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+        <div className="space-y-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest"
+          >
+            <Factory className="w-3.5 h-3.5" />
+            Shop Discovery
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl font-black tracking-tight"
+          >
+            Global <span className="text-blue-500">Marketplace</span>
+          </motion.h1>
+          <p className="text-slate-400 max-w-xl text-lg font-medium leading-relaxed">
+            Browse verified CNC and 3D printing shops. Filter by capabilities, materials, and location to find your perfect manufacturing partner.
+          </p>
         </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
-            showFilters || selectedCap || selectedMat
-              ? "bg-blue-600 text-white"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-          }`}
-        >
-          <SlidersHorizontal className="w-4 h-4" />
-          Filters {(selectedCap || selectedMat) ? "(Active)" : ""}
-        </button>
-      </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          <div>
-            <h4 className="text-xs uppercase tracking-widest text-slate-500 mb-3 font-semibold">Capabilities</h4>
-            <div className="flex flex-wrap gap-2">
-              {ALL_CAPABILITIES.map((cap) => (
-                <button
-                  key={cap}
-                  onClick={() => setSelectedCap(selectedCap === cap ? null : cap)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    selectedCap === cap
-                      ? "bg-blue-600 text-white border border-blue-500"
-                      : "bg-slate-800 text-slate-400 border border-slate-700 hover:border-blue-500/50"
-                  }`}
-                >
-                  {cap}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 className="text-xs uppercase tracking-widest text-slate-500 mb-3 font-semibold">Materials</h4>
-            <div className="flex flex-wrap gap-2">
-              {ALL_MATERIALS.map((mat) => (
-                <button
-                  key={mat}
-                  onClick={() => setSelectedMat(selectedMat === mat ? null : mat)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    selectedMat === mat
-                      ? "bg-indigo-600 text-white border border-indigo-500"
-                      : "bg-slate-800 text-slate-400 border border-slate-700 hover:border-indigo-500/50"
-                  }`}
-                >
-                  {mat}
-                </button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* View Toggle & Results Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <p className="text-slate-500 text-sm">
-          <span className="text-white font-bold">{filtered.length}</span> shops found
-        </p>
-        <div className="flex bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+        {/* View Toggle - HCI: Interaction Consistency */}
+        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-md">
           <button
             onClick={() => setViewMode("grid")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              viewMode === "grid" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+              viewMode === "grid" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "text-slate-500 hover:text-white"
             }`}
           >
-            <LayoutGrid className="w-3.5 h-3.5" />
+            <LayoutGrid className="w-4 h-4" />
             Grid View
           </button>
           <button
             onClick={() => setViewMode("map")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              viewMode === "map" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+              viewMode === "map" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "text-slate-500 hover:text-white"
             }`}
           >
-            <MapIcon className="w-3.5 h-3.5" />
+            <MapIcon className="w-4 h-4" />
             Map View
           </button>
         </div>
       </div>
-      {loading ? (
-        <div className="flex items-center justify-center py-32">
-          <div className="flex items-center gap-3 text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin" />
-            <span>Loading shops...</span>
+
+      {/* Search & Filter - HCI: Error Prevention & Feedback */}
+      <div className="space-y-4">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1 w-full group">
+            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+              <Search className="w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name, city, or capability..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full glass-card bg-white/5 border-white/10 px-14 py-5 text-sm font-medium placeholder-slate-600 outline-none focus:border-blue-500/50 transition-all rounded-2xl"
+            />
+            {search && (
+              <button 
+                onClick={() => setSearch("")}
+                className="absolute right-5 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-xl transition-colors"
+              >
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            )}
           </div>
+          
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-3 px-8 py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border shadow-lg ${
+              showFilters || selectedCap || selectedMat
+                ? "bg-blue-600 text-white border-blue-400 shadow-blue-600/20"
+                : "bg-white/5 text-slate-400 border-white/10 hover:bg-white/10"
+            }`}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            Filters {(selectedCap || selectedMat) ? "• Active" : ""}
+          </button>
         </div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-32">
-          <Factory className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-          <p className="text-slate-500 text-lg font-medium">No shops found</p>
-          <p className="text-slate-600 text-sm mt-2">Try adjusting your filters or search term.</p>
-        </div>
-      ) : (
-        <AnimatePresence mode="wait">
-          {viewMode === "grid" ? (
+
+        {/* Filter Panel - HCI: Progressive Disclosure */}
+        <AnimatePresence>
+          {showFilters && (
             <motion.div
-              key="grid"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="glass-card p-10 grid grid-cols-1 md:grid-cols-2 gap-12 border-white/10"
             >
-              {filtered.map((shop, i) => (
-                <ShopCard key={shop.id} shop={shop} index={i} userLocation={userLocation} />
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="map"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <ShopMap shops={filtered} onSearchArea={handleSearchArea} />
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-blue-500" />
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Capability Focus</h4>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {ALL_CAPABILITIES.map((cap) => (
+                    <button
+                      key={cap}
+                      onClick={() => setSelectedCap(selectedCap === cap ? null : cap)}
+                      className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                        selectedCap === cap
+                          ? "bg-blue-600 text-white border-blue-400 shadow-lg shadow-blue-600/20"
+                          : "bg-white/5 text-slate-400 border-white/10 hover:border-blue-500/30"
+                      }`}
+                    >
+                      {cap}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-indigo-500" />
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Material Availability</h4>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {ALL_MATERIALS.map((mat) => (
+                    <button
+                      key={mat}
+                      onClick={() => setSelectedMat(selectedMat === mat ? null : mat)}
+                      className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                        selectedMat === mat
+                          ? "bg-indigo-600 text-white border-indigo-400 shadow-lg shadow-indigo-600/20"
+                          : "bg-white/5 text-slate-400 border-white/10 hover:border-indigo-500/30"
+                      }`}
+                    >
+                      {mat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {(selectedCap || selectedMat) && (
+                <div className="md:col-span-2 pt-6 border-t border-white/5 flex justify-end">
+                  <button 
+                    onClick={() => { setSelectedCap(null); setSelectedMat(null); }}
+                    className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors flex items-center gap-2"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    Reset All Filters
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
-      )}
+      </div>
+
+      {/* Results Section */}
+      <div className="space-y-8">
+        <div className="flex items-center gap-3">
+          <div className="h-px bg-white/5 flex-1" />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">
+            {loading ? "Discovering Nodes..." : `${filtered.length} Manufacturing Nodes Identified`}
+          </span>
+          <div className="h-px bg-white/5 flex-1" />
+        </div>
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-40 gap-6">
+            <div className="relative">
+              <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+              <motion.div 
+                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute inset-0 bg-blue-500 rounded-full blur-xl"
+              />
+            </div>
+            <p className="text-slate-500 font-black uppercase tracking-widest text-xs animate-pulse">Scanning Global Network...</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-40 space-y-6 glass-card rounded-[3rem] border-dashed border-white/10"
+          >
+            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto border border-white/10">
+              <Factory className="w-10 h-10 text-slate-700" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-white">No Matching Nodes Found</h3>
+              <p className="text-slate-500 max-w-sm mx-auto text-sm">
+                We couldn't find any shops matching your specific criteria. Try expanding your search area or loosening the material constraints.
+              </p>
+            </div>
+            <button 
+              onClick={() => { setSearch(""); setSelectedCap(null); setSelectedMat(null); }}
+              className="btn-premium px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest"
+            >
+              Reset Search Parameters
+            </button>
+          </motion.div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {viewMode === "grid" ? (
+              <motion.div
+                key="grid"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+              >
+                {filtered.map((shop, i) => (
+                  <ShopCard key={shop.id} shop={shop} index={i} userLocation={userLocation} />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="map"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="perspective-1000"
+              >
+                <div className="glass-card p-4 rounded-[3rem] border-white/10 shadow-3xl">
+                  <ShopMap shops={filtered} onSearchArea={handleSearchArea} />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+      </div>
     </main>
   );
 }

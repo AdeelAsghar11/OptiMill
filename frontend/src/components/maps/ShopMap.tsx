@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Store, Star, ArrowRight, RefreshCw } from "lucide-react";
@@ -35,14 +35,37 @@ function ChangeView({ center }: { center: [number, number] }) {
 
 export function ShopMap({ shops, onSearchArea }: { shops: Shop[], onSearchArea?: (bounds: any) => void }) {
   const [center, setCenter] = useState<[number, number]>([34.05, -118.24]); // Default to LA for demo
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [showSearchBtn, setShowSearchBtn] = useState(false);
 
   useEffect(() => {
     if (shops.length > 0 && shops[0].latitude && shops[0].longitude) {
       setCenter([shops[0].latitude, shops[0].longitude]);
-    } else if ("geolocation" in navigator) {
+    }
+    
+    if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((pos) => {
-        setCenter([pos.coords.latitude, pos.coords.longitude]);
+        const userPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation(userPos);
+        if (shops.length === 0) setCenter(userPos);
+        
+        // Persist location to backend if logged in
+        // (Note: In a real app, this would be debounced or triggered by user action)
+        try {
+          const token = localStorage.getItem("supabase.auth.token");
+          if (token) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/locations/`, {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${JSON.parse(token).currentSession.access_token}`
+              },
+              body: JSON.stringify({ latitude: pos.coords.latitude, longitude: pos.coords.longitude })
+            });
+          }
+        } catch (err) {
+          console.warn("Failed to persist location", err);
+        }
       });
     }
   }, [shops]);
@@ -92,6 +115,26 @@ export function ShopMap({ shops, onSearchArea }: { shops: Shop[], onSearchArea?:
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
+        
+        {/* User Location Marker & Rings */}
+        {userLocation && (
+          <>
+            <Marker 
+              position={userLocation}
+              icon={L.divIcon({
+                className: "user-location-marker",
+                html: `<div class="w-4 h-4 bg-blue-500 border-2 border-white rounded-full shadow-[0_0_10px_rgba(59,130,246,1)] animate-pulse"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+              })}
+            >
+              <Popup>You are here</Popup>
+            </Marker>
+            {/* Distance Rings */}
+            <Circle center={userLocation} radius={5000} pathOptions={{ color: 'blue', weight: 1, fillOpacity: 0.05, dashArray: '5, 5' }} />
+            <Circle center={userLocation} radius={15000} pathOptions={{ color: 'blue', weight: 1, fillOpacity: 0.02, dashArray: '5, 10' }} />
+          </>
+        )}
         {shops.map((shop) => (
           shop.latitude && shop.longitude && (
             <Marker key={shop.id} position={[shop.latitude, shop.longitude]}>

@@ -9,7 +9,7 @@ const tasks = [
   { id: "T03", title: "Risk Engine Logic", status: "done" },
   { id: "T04", title: "Matching & Quoting API", status: "done" },
   { id: "T05", title: "Scheduling Logic", status: "done" },
-  { id: "T06", title: "Premium UI Scaffold", status: "loading" },
+  { id: "T06", title: "Premium UI Scaffold", status: "done" },
 ];
 
 export const SprintTracker = () => {
@@ -40,10 +40,10 @@ export const SprintTracker = () => {
       <div className="mt-6 pt-6 border-t border-white/5">
         <div className="flex justify-between text-xs mb-2">
           <span className="text-slate-400">Overall Progress</span>
-          <span className="text-blue-400">83%</span>
+          <span className="text-emerald-400">100%</span>
         </div>
         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 w-[83%]" />
+          <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 w-[100%]" />
         </div>
       </div>
     </div>

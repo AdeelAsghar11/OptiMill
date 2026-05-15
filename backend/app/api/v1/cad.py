@@ -63,7 +63,7 @@ def _analyze_with_gemini(prompt: str) -> dict:
 
     genai.configure(api_key=settings.GEMINI_API_KEY)
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-1.5-flash-latest",
         generation_config={"response_mime_type": "application/json"},
     )
     response = model.generate_content(prompt)
