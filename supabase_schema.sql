@@ -174,3 +174,63 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- 11. DESIGN CLASSIFICATIONS (Extended analysis)
+CREATE TABLE design_classifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  cad_file_id UUID REFERENCES cad_files(id) ON DELETE CASCADE,
+  design_type TEXT,
+  design_category TEXT,
+  confidence_score NUMERIC,
+  geometric_features JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 12. MATERIAL REQUIREMENTS (AI-inferred for a specific design)
+CREATE TABLE material_requirements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  cad_file_id UUID REFERENCES cad_files(id) ON DELETE CASCADE,
+  material_name TEXT,
+  material_category TEXT,
+  estimated_quantity NUMERIC,
+  unit TEXT,
+  priority TEXT,
+  supplier_type TEXT,
+  inference_confidence NUMERIC,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 13. DESIGN MATERIAL MAPPINGS (Knowledge base)
+CREATE TABLE design_material_mappings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  design_type TEXT,
+  material_name TEXT,
+  typical_quantity_range TEXT,
+  use_case TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (design_type, material_name)
+);
+
+-- 14. RECOMMENDATION SCORES
+CREATE TABLE recommendation_scores (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  cad_file_id UUID REFERENCES cad_files(id) ON DELETE CASCADE,
+  shop_id UUID REFERENCES shops(id) ON DELETE CASCADE,
+  total_score NUMERIC,
+  match_details JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (cad_file_id, shop_id)
+);
+
+-- Row-Level Security for new tables
+ALTER TABLE design_classifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public classifications" ON design_classifications FOR SELECT USING (true);
+
+ALTER TABLE material_requirements ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public materials" ON material_requirements FOR SELECT USING (true);
+
+ALTER TABLE design_material_mappings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public mappings" ON design_material_mappings FOR SELECT USING (true);
+
+ALTER TABLE recommendation_scores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public scores" ON recommendation_scores FOR SELECT USING (true);

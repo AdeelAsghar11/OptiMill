@@ -12,3 +12,4 @@ google-generativeai
 openai
 stripe
 python-multipart
+numpy
