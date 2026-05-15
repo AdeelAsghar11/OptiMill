@@ -142,3 +142,5 @@ static/collected/
 *.orig
 *.patch
 "action v2.md"
+scratch/
+*.whl
