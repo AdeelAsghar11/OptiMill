@@ -439,7 +439,7 @@ CREATE TABLE user_locations (
 
 ---
 
-## Phase 11 — External Supplier Search (Optional) 🆕
+## Phase 11 — External Supplier Search (Optional) ✅ (Complete)
 
 **Objective:** (Time-Permitting) Integrate external APIs to find material suppliers, expanding beyond internal shop database
 
@@ -651,11 +651,11 @@ CREATE INDEX idx_external_supplier_type ON external_suppliers(supplier_type);
 | 5: Communication | t23-t26 | Complete |
 | 6: Payments | t27-t30 | Complete |
 | 7: Notifications | t31-t33 | Complete |
-| **8: Classification** | **t34-t44** | **IN PROGRESS** |
-| **9: Recommendations** | **t45-t52** | **NEXT** |
-| **10: Maps** | **t53-t65** | **NEXT** |
-| **11: External Search** | **t66-t72** | **OPTIONAL** |
-| **12: Deployment** | **t73-t87** | **FINAL** |
+| 8: Classification | t34-t44 | Complete |
+| 9: Recommendations | t45-t52 | Complete |
+| 10: Maps | t53-t65 | Complete |
+| 11: External Search | t66-t72 | Complete |
+| **12: Deployment** | **t73-t87** | **IN PROGRESS** |
 
 ---
 
