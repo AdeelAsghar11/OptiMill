@@ -6,6 +6,7 @@ import { Star, Clock, DollarSign, CheckCircle2, Loader2, ArrowLeft, Zap } from "
 import axios from "axios";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -18,17 +19,40 @@ export default function QuoteComparePage() {
   const [accepted, setAccepted] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!cadFileId) { setLoading(false); return; }
-    axios.get(`${API_BASE_URL}/api/v1/quotes/compare/${cadFileId}`)
-      .then((r) => setQuotes(r.data))
-      .catch(() => setQuotes([]))
-      .finally(() => setLoading(false));
+    async function fetchQuotes() {
+      if (!cadFileId) { setLoading(false); return; }
+      
+      try {
+        const session = useAuthStore.getState().session;
+        if (!session) {
+          setLoading(false);
+          return;
+        }
+
+        const res = await axios.get(`${API_BASE_URL}/api/v1/quotes/compare/${cadFileId}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        setQuotes(res.data);
+      } catch (err) {
+        console.error("Error fetching quotes:", err);
+        setQuotes([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchQuotes();
   }, [cadFileId]);
 
   const handleAccept = async (quoteId: string) => {
     setAccepting(quoteId);
     try {
-      await axios.post(`${API_BASE_URL}/api/v1/quotes/accept/${quoteId}`);
+      const session = useAuthStore.getState().session;
+      if (!session) return;
+
+      await axios.post(`${API_BASE_URL}/api/v1/quotes/accept/${quoteId}`, {}, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
       setAccepted(quoteId);
     } catch (e) {
       console.error(e);
@@ -101,8 +125,8 @@ export default function QuoteComparePage() {
                 <div>
                   <h3 className="font-bold text-lg">{q.shop?.name || "Shop"}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    {q.shop?.location_city && (
-                      <span className="text-slate-500 text-xs">{q.shop.location_city}</span>
+                    {q.shop?.address && (
+                      <span className="text-slate-500 text-xs">{q.shop.address}</span>
                     )}
                     {q.shop?.rating > 0 && (
                       <span className="flex items-center gap-1 text-yellow-400 text-xs font-semibold">

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Package, Loader2, ArrowRight, FileCode, Store } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -107,13 +108,26 @@ function OrderCard({ order, index }: { order: any; index: number }) {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { session } = useAuthStore();
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/v1/orders/`)
-      .then((r) => setOrders(r.data))
-      .catch(() => setOrders([]))
-      .finally(() => setLoading(false));
-  }, []);
+    const fetchOrders = async () => {
+      if (!session) return;
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/v1/orders/`, {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        setOrders(res.data);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [session]);
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, Package, FileCode, Store, DollarSign } from "lucide-react";
+import { ArrowLeft, Loader2, Package, FileCode, Store, DollarSign, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -61,11 +61,24 @@ export default function OrderDetailPage() {
   const { user } = useAuthStore();
   const currentUserId = user?.id;
 
-  const fetchOrder = () => {
-    axios.get(`${API_BASE_URL}/api/v1/orders/${orderId}`)
-      .then((r) => setOrder(r.data))
-      .catch(() => setOrder(null))
-      .finally(() => setLoading(false));
+  const fetchOrder = async () => {
+    try {
+      const session = useAuthStore.getState().session;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
+      const res = await axios.get(`${API_BASE_URL}/api/v1/orders/${orderId}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+      setOrder(res.data);
+    } catch (err) {
+      console.error("Error fetching order:", err);
+      setOrder(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +88,25 @@ export default function OrderDetailPage() {
 
   const releasePayment = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/api/v1/payments/release/${orderId}`);
+      const session = useAuthStore.getState().session;
+      if (!session) return;
+
+      await axios.post(`${API_BASE_URL}/api/v1/payments/release/${orderId}`, {}, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+      fetchOrder();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const advanceStatus = async (nextStatus: string) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/api/v1/orders/${orderId}/status`, {
+        status: nextStatus
+      }, {
+        headers: { Authorization: `Bearer ${useAuthStore.getState().session?.access_token}` }
+      });
       fetchOrder();
     } catch (e) {
       console.error(e);
@@ -128,19 +159,63 @@ export default function OrderDetailPage() {
             ))}
           </div>
         </div>
-        <div className="flex items-center justify-between gap-4 mt-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-8 pt-8 border-t border-white/5">
           <OrderTimeline status={order.status} />
-          {order.status === "pending" && (
-            <PaymentButton orderId={orderId} amount={order.amount} />
-          )}
-          {order.status === "shipped" && (
-            <button 
-              onClick={releasePayment}
-              className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-xl font-bold text-white shadow-lg shadow-green-500/20 transition-all"
-            >
-              Release Funds to Shop
-            </button>
-          )}
+          
+          <div className="flex items-center gap-4">
+            {/* Client Actions */}
+            {user?.user_metadata?.role === "client" && (
+              <>
+                {order.status === "pending" && (
+                  <PaymentButton orderId={orderId} amount={order.amount} />
+                )}
+                {order.status === "shipped" && (
+                  <button 
+                    onClick={releasePayment}
+                    className="bg-green-600 hover:bg-green-500 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-white shadow-2xl shadow-green-600/20 transition-all active:scale-95"
+                  >
+                    Release Funds to Shop
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Shop Actions */}
+            {user?.user_metadata?.role === "shop" && (
+              <>
+                {order.status === "paid" && (
+                  <button 
+                    onClick={() => advanceStatus("in_progress")}
+                    className="bg-blue-600 hover:bg-blue-500 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-white shadow-2xl shadow-blue-600/20 transition-all active:scale-95"
+                  >
+                    Start Manufacturing
+                  </button>
+                )}
+                {order.status === "in_progress" && (
+                  <button 
+                    onClick={() => advanceStatus("qa")}
+                    className="bg-indigo-600 hover:bg-indigo-500 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-white shadow-2xl shadow-indigo-600/20 transition-all active:scale-95"
+                  >
+                    Move to Quality Check
+                  </button>
+                )}
+                {order.status === "qa" && (
+                  <button 
+                    onClick={() => advanceStatus("shipped")}
+                    className="bg-cyan-600 hover:bg-cyan-500 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-white shadow-2xl shadow-cyan-600/20 transition-all active:scale-95"
+                  >
+                    Mark as Shipped
+                  </button>
+                )}
+              </>
+            )}
+
+            {order.status === "complete" && (
+              <div className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-xs font-black uppercase tracking-widest">
+                <CheckCircle2 className="w-4 h-4" /> Order Fulfilled
+              </div>
+            )}
+          </div>
         </div>
       </motion.div>
 

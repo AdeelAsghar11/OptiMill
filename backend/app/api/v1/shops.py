@@ -35,17 +35,25 @@ async def create_shop(shop_data: ShopCreate, current_user: dict = Depends(requir
             "owner_id": current_user["id"],
             "name": shop_data.name,
             "description": shop_data.description,
-            "location_city": shop_data.location_city,
-            "location_country": shop_data.location_country,
+            "address": shop_data.location_city,
             "hourly_rate": shop_data.hourly_rate,
             "capabilities": shop_data.capabilities,
             "materials": shop_data.materials,
-            "machines": shop_data.machines,
-            "is_verified": False,
+            "verified": False,
         }).execute()
         return res.data[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/my-shop")
+async def get_my_shop(current_user: dict = Depends(require_role(["shop", "admin"]))):
+    """Retrieve the shop profile for the logged-in Shop Master."""
+    try:
+        res = supabase.table("shops").select("*").eq("owner_id", current_user["id"]).single().execute()
+        return res.data
+    except Exception:
+        return None
 
 
 # --- t15: Shop Discovery with Filtering ---
@@ -63,11 +71,11 @@ async def discover_shops(
     """Discover shops filtered by capability, material, city, or rating."""
     try:
         query = supabase.table("shops").select(
-            "id, name, description, location_city, location_country, capabilities, materials, hourly_rate, rating, is_verified, latitude, longitude"
+            "id, name, description, address, capabilities, materials, hourly_rate, rating, verified, lat, lng"
         )
 
         if city:
-            query = query.ilike("location_city", f"%{city}%")
+            query = query.ilike("address", f"%{city}%")
         if min_rating:
             query = query.gte("rating", min_rating)
         if capability:
@@ -75,9 +83,9 @@ async def discover_shops(
         if material:
             query = query.contains("materials", [material])
         if min_lat is not None and max_lat is not None:
-            query = query.gte("latitude", min_lat).lte("latitude", max_lat)
+            query = query.gte("lat", min_lat).lte("lat", max_lat)
         if min_lon is not None and max_lon is not None:
-            query = query.gte("longitude", min_lon).lte("longitude", max_lon)
+            query = query.gte("lng", min_lon).lte("lng", max_lon)
 
         res = query.execute()
         shops = res.data
@@ -85,9 +93,9 @@ async def discover_shops(
         # Add mock lat/lon if missing for map demo
         import random
         for s in shops:
-            if not s.get("latitude"):
-                s["latitude"] = 34.05 + (random.random() - 0.5) * 0.1 # Mock near LA
-                s["longitude"] = -118.24 + (random.random() - 0.5) * 0.1
+            if not s.get("lat"):
+                s["lat"] = 34.05 + (random.random() - 0.5) * 0.1 # Mock near LA
+                s["lng"] = -118.24 + (random.random() - 0.5) * 0.1
                 
         return shops
     except Exception as e:
@@ -110,8 +118,8 @@ async def get_nearby_shops(
         
         nearby_shops = []
         for shop in shops:
-            if shop.get("latitude") and shop.get("longitude"):
-                dist = haversine_distance(lat, lon, float(shop["latitude"]), float(shop["longitude"]))
+            if shop.get("lat") and shop.get("lng"):
+                dist = haversine_distance(lat, lon, float(shop["lat"]), float(shop["lng"]))
                 if dist <= radius:
                     shop["distance_km"] = round(dist, 2)
                     nearby_shops.append(shop)

@@ -4,9 +4,12 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileCode, Clock, CheckCircle2, XCircle, Loader2,
-  ChevronDown, ChevronUp, DollarSign, Send
+  ChevronDown, ChevronUp, DollarSign, Send, Settings as SettingsIcon,
+  Package, ArrowRight
 } from "lucide-react";
 import axios from "axios";
+import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -17,12 +20,22 @@ const STATUS_COLORS: Record<string, string> = {
   rejected: "bg-red-500/10 text-red-400 border-red-500/20",
 };
 
+const ORDER_STAGE_COLORS: Record<string, string> = {
+  pending:     "border-yellow-500/50 bg-yellow-500/10 text-yellow-400",
+  paid:        "border-blue-500/50 bg-blue-500/10 text-blue-400",
+  in_progress: "border-indigo-500/50 bg-indigo-500/10 text-indigo-400",
+  qa:          "border-purple-500/50 bg-purple-500/10 text-purple-400",
+  shipped:     "border-cyan-500/50 bg-cyan-500/10 text-cyan-400",
+  complete:    "border-green-500/50 bg-green-500/10 text-green-400",
+};
+
 function QuoteForm({ requestId, onSubmit }: { requestId: string; onSubmit: () => void }) {
   const [amount, setAmount] = useState("");
   const [days, setDays] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { session } = useAuthStore();
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -31,6 +44,8 @@ function QuoteForm({ requestId, onSubmit }: { requestId: string; onSubmit: () =>
         amount: parseFloat(amount),
         delivery_days: parseInt(days),
         notes,
+      }, {
+        headers: { Authorization: `Bearer ${session?.access_token}` }
       });
       onSubmit();
     } catch (e) {
@@ -163,27 +178,99 @@ function RequestCard({ req, index }: { req: any; index: number }) {
   );
 }
 
+function OrderCard({ order, index }: { order: any; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.07 }}
+      className="glass rounded-2xl p-5 border border-white/5 hover:border-blue-500/30 transition-all"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+            <Package className="w-5 h-5 text-indigo-400" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm">{order.cad_files?.file_name || "CAD File"}</p>
+            <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">
+              Client: {order.profiles?.full_name || "Anonymous"}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-lg font-black text-white">${order.amount?.toLocaleString()}</div>
+          <span className={`inline-block px-2 py-0.5 rounded-lg border text-[9px] font-black uppercase tracking-widest ${ORDER_STAGE_COLORS[order.status] || ""}`}>
+            {order.status}
+          </span>
+        </div>
+      </div>
+      <div className="flex justify-end pt-2 border-t border-white/5">
+        <Link
+          href={`/orders/${order.id}`}
+          className="flex items-center gap-1.5 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:gap-2.5 transition-all"
+        >
+          Manage Order <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function ShopDashboardPage() {
+  const { session } = useAuthStore();
   const [requests, setRequests] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/v1/quotes/requests/incoming`)
-      .then((r) => setRequests(r.data))
-      .catch(() => setRequests([]))
-      .finally(() => setLoading(false));
-  }, []);
+    if (!session?.access_token) return;
+
+    const fetchData = async () => {
+      try {
+        const [reqRes, orderRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/v1/quotes/requests/incoming`, {
+            headers: { Authorization: `Bearer ${session.access_token}` }
+          }),
+          axios.get(`${API_BASE_URL}/api/v1/orders/`, {
+            headers: { Authorization: `Bearer ${session.access_token}` }
+          })
+        ]);
+        setRequests(reqRes.data);
+        setOrders(orderRes.data);
+      } catch (err: any) {
+        if (err.response?.status === 404 && err.config.url.includes("requests/incoming")) {
+          window.location.href = "/dashboard/shop/setup";
+        }
+        setRequests([]);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session]);
 
   const pending = requests.filter((r) => r.status === "pending");
   const quoted  = requests.filter((r) => r.status === "quoted");
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-12">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight mb-2">
-          Shop <span className="text-blue-500">Dashboard</span>
-        </h1>
-        <p className="text-slate-400">Manage incoming quote requests and track your active orders.</p>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
+            Shop <span className="text-blue-500">Dashboard</span>
+          </h1>
+          <p className="text-slate-400">Manage incoming quote requests and track your active orders.</p>
+        </div>
+        <button
+          onClick={() => window.location.href = "/dashboard/shop/setup"}
+          className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-sm font-bold transition-all text-slate-300 hover:text-white"
+        >
+          <SettingsIcon className="w-4 h-4" />
+          Edit Shop Profile
+        </button>
       </motion.div>
 
       {/* Stats Row */}
@@ -191,7 +278,7 @@ export default function ShopDashboardPage() {
         {[
           { label: "Pending Requests", value: pending.length, color: "text-yellow-400" },
           { label: "Quotes Sent", value: quoted.length, color: "text-blue-400" },
-          { label: "Total Requests", value: requests.length, color: "text-white" },
+          { label: "Active Orders", value: orders.length, color: "text-indigo-400" },
         ].map(({ label, value, color }) => (
           <div key={label} className="glass rounded-2xl p-5">
             <span className="text-slate-500 text-xs uppercase tracking-widest block mb-1">{label}</span>
@@ -205,18 +292,41 @@ export default function ShopDashboardPage() {
         <div className="flex items-center justify-center py-24">
           <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
         </div>
-      ) : requests.length === 0 ? (
-        <div className="text-center py-24">
-          <Clock className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-          <p className="text-slate-500 text-lg font-medium">No requests yet</p>
-          <p className="text-slate-600 text-sm mt-2">Quote requests will appear here once clients find your shop.</p>
-        </div>
       ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Requests List */}
         <div className="space-y-4">
-          <h2 className="text-xs uppercase tracking-widest text-slate-500 font-semibold mb-2">All Requests</h2>
-          {requests.map((r, i) => <RequestCard key={r.id} req={r} index={i} />)}
+          <h2 className="text-xs uppercase tracking-widest text-slate-500 font-black mb-4 flex items-center gap-2">
+            <Clock className="w-4 h-4" /> Incoming Requests
+          </h2>
+          {requests.length === 0 ? (
+            <div className="text-center py-12 glass rounded-2xl border-dashed border-white/10">
+              <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">No requests yet</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {requests.map((r, i) => <RequestCard key={r.id} req={r} index={i} />)}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Active Orders List */}
+        <div className="space-y-4">
+          <h2 className="text-xs uppercase tracking-widest text-slate-500 font-black mb-4 flex items-center gap-2">
+            <Package className="w-4 h-4 text-indigo-400" /> Active Orders
+          </h2>
+          {orders.length === 0 ? (
+            <div className="text-center py-12 glass rounded-2xl border-dashed border-white/10">
+              <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">No active orders</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {orders.map((o, i) => <OrderCard key={o.id} order={o} index={i} />)}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
     </main>
   );
 }

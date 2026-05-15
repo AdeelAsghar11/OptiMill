@@ -68,11 +68,11 @@ export default function ShopsPage() {
   const filtered = shops.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||
     s.description?.toLowerCase().includes(search.toLowerCase()) ||
-    s.location_city?.toLowerCase().includes(search.toLowerCase())
+    s.address?.toLowerCase().includes(search.toLowerCase())
   ).sort((a, b) => {
-    if (userLocation && a.latitude && b.latitude) {
-      const distA = calculateDistance(userLocation.lat, userLocation.lon, a.latitude, a.longitude);
-      const distB = calculateDistance(userLocation.lat, userLocation.lon, b.latitude, b.longitude);
+    if (userLocation && a.lat && b.lat) {
+      const distA = calculateDistance(userLocation.lat, userLocation.lon, a.lat, a.lng);
+      const distB = calculateDistance(userLocation.lat, userLocation.lon, b.lat, b.lng);
       return distA - distB;
     }
     return 0;

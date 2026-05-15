@@ -217,13 +217,13 @@ async def get_cad_analysis(file_id: str, current_user: dict = Depends(get_curren
 
 
 @router.get("/{file_id}/recommendations")
-async def get_shop_recommendations(file_id: str, current_user: dict = Depends(get_current_user)):
+async def get_shop_recommendations(file_id: str, limit: int = 10, current_user: dict = Depends(get_current_user)):
     """
-    Returns top 5 recommended shops for the given CAD file.
+    Returns top recommended shops for the given CAD file.
     """
     try:
         engine = RecommendationEngine()
-        recommendations = await engine.get_top_recommendations(file_id)
+        recommendations = await engine.get_top_recommendations(file_id, limit=limit)
         return recommendations
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

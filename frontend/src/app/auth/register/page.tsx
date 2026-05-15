@@ -5,12 +5,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, Cpu, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function RegisterPage() {
+  const searchParams = useSearchParams();
+  const initialRole = searchParams.get("role") as "client" | "shop" || "client";
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState<"client" | "shop">(initialRole);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -25,6 +29,9 @@ export default function RegisterPage() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            role: role,
+          }
         },
       });
 
@@ -79,6 +86,25 @@ export default function RegisterPage() {
               <p className={`text-sm ${error.includes("check your email") ? "text-blue-400" : "text-red-400"}`}>{error}</p>
             </div>
           )}
+
+          <div className="flex p-1 bg-black/40 border border-white/10 rounded-2xl mb-8">
+            <button
+              onClick={() => setRole("client")}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                role === "client" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"
+              }`}
+            >
+              Client
+            </button>
+            <button
+              onClick={() => setRole("shop")}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                role === "shop" ? "bg-indigo-600 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"
+              }`}
+            >
+              Shop Master
+            </button>
+          </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
             <div className="space-y-1.5">

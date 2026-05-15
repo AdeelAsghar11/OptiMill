@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, MessageCircle, Loader2 } from "lucide-react";
 import axios from "axios";
 import { supabase } from "@/lib/supabase";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -30,10 +31,22 @@ export function LiveChat({ orderId, currentUserId }: LiveChatProps) {
 
   // t24 — Load existing messages
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/v1/messages/${orderId}`)
-      .then((r) => setMessages(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    const fetchMessages = async () => {
+      try {
+        const { session } = useAuthStore.getState();
+        if (!session) return;
+
+        const r = await axios.get(`${API_BASE_URL}/api/v1/messages/${orderId}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        setMessages(r.data);
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMessages();
   }, [orderId]);
 
   // t23 — Subscribe to Supabase Realtime for live updates
@@ -65,9 +78,12 @@ export function LiveChat({ orderId, currentUserId }: LiveChatProps) {
     if (!input.trim() || sending) return;
     setSending(true);
     try {
+      const { session } = useAuthStore.getState();
       await axios.post(`${API_BASE_URL}/api/v1/messages/`, {
         order_id: orderId,
         content: input.trim(),
+      }, {
+        headers: { Authorization: `Bearer ${session?.access_token}` }
       });
       setInput("");
     } catch (e) {

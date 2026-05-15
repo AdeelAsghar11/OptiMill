@@ -89,7 +89,7 @@ class ExternalSupplierFinder:
         """
         
         try:
-            response = requests.get(self.OVERPASS_URL, params={'data': query})
+            response = requests.get(self.OVERPASS_URL, params={'data': query}, timeout=15)
             response.raise_for_status()
             data = response.json()
             

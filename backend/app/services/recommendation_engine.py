@@ -9,7 +9,7 @@ class RecommendationEngine:
     Ranks shops based on CAD analysis and shop capabilities.
     """
 
-    async def get_top_recommendations(self, cad_file_id: str, limit: int = 5) -> List[Dict[str, Any]]:
+    async def get_top_recommendations(self, cad_file_id: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Calculates scores for all shops and returns the top ranked ones.
         """

@@ -154,6 +154,16 @@ export function NotificationBell() {
                           View Order <ExternalLink className="w-2.5 h-2.5" />
                         </Link>
                       )}
+
+                      {n.data?.cad_file_id && n.type === "quote_received" && (
+                        <Link 
+                          href={`/quotes/compare?cad_file_id=${n.data.cad_file_id}`}
+                          onClick={() => { markAsRead(n.id); setIsOpen(false); }}
+                          className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-500 hover:underline"
+                        >
+                          Compare Quotes <ExternalLink className="w-2.5 h-2.5" />
+                        </Link>
+                      )}
                     </div>
                   ))
                 )}

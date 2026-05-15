@@ -38,7 +38,7 @@ async def list_orders(current_user: dict = Depends(get_current_user)):
             ).in_("shop_id", shop_ids).order("created_at", desc=True).execute()
         else:
             res = supabase.table("orders").select(
-                "*, shops(name, location_city), cad_files(file_name, process_recommendation)"
+                "*, shops(name, address), cad_files(file_name, process_recommendation)"
             ).eq("client_id", current_user["id"]).order("created_at", desc=True).execute()
 
         return res.data
@@ -48,13 +48,37 @@ async def list_orders(current_user: dict = Depends(get_current_user)):
 
 @router.get("/{order_id}")
 async def get_order(order_id: str, current_user: dict = Depends(get_current_user)):
-    """Get a single order's full details."""
+    """Get a single order's full details with authorization check."""
     try:
+        # 1. Fetch order basic info to check permissions
+        order_base = supabase.table("orders").select("id, client_id, shop_id").eq("id", order_id).single().execute()
+        if not order_base.data:
+            raise HTTPException(status_code=404, detail="Order not found.")
+
+        # 2. Check if user is authorized
+        is_client = order_base.data["client_id"] == current_user["id"]
+        
+        # For shop, we need to check if they own the shop_id
+        shop_res = supabase.table("shops").select("id").eq("owner_id", current_user["id"]).execute()
+        owned_shop_ids = [s["id"] for s in shop_res.data]
+        is_shop_owner = order_base.data["shop_id"] in owned_shop_ids
+
+        if not (is_client or is_shop_owner):
+            # Check if admin
+            profile = supabase.table("profiles").select("role").eq("id", current_user["id"]).single().execute()
+            if not profile.data or profile.data.get("role") != "admin":
+                raise HTTPException(status_code=403, detail="Not authorized to view this order.")
+
+        # 3. Fetch full details using the same proven syntax as list_orders
         res = supabase.table("orders").select(
-            "*, shops(name, location_city), cad_files(*), profiles!client_id(full_name)"
+            "*, shops(name, address), cad_files(*), profiles!client_id(full_name)"
         ).eq("id", order_id).single().execute()
+        
         return res.data
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"Error in get_order: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

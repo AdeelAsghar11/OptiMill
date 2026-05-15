@@ -186,6 +186,17 @@ DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'cad_files' AND policyname = 'Clients can view own files') THEN
     CREATE POLICY "Clients can view own files" ON cad_files FOR SELECT USING (client_id = auth.uid());
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'cad_files' AND policyname = 'Shops can view files for their orders') THEN
+    -- Allow shops to see CAD files if they have an order or quote request for it
+    CREATE POLICY "Shops can view files for their orders" ON cad_files FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM orders WHERE orders.cad_file_id = cad_files.id AND orders.shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+      ) OR
+      EXISTS (
+        SELECT 1 FROM quote_requests WHERE quote_requests.cad_file_id = cad_files.id AND quote_requests.shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+      )
+    );
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'cad_files' AND policyname = 'Clients can upload own files') THEN
     CREATE POLICY "Clients can upload own files" ON cad_files FOR INSERT WITH CHECK (client_id = auth.uid());
   END IF;
@@ -308,5 +319,78 @@ ALTER TABLE external_suppliers ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'external_suppliers' AND policyname = 'Public external suppliers') THEN
     CREATE POLICY "Public external suppliers" ON external_suppliers FOR SELECT USING (true);
+  END IF;
+END $$;
+
+-- 16. ADDITIONAL RLS POLICIES FOR ORDERS & QUOTES
+ALTER TABLE quote_requests ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'quote_requests' AND policyname = 'Users can view relevant requests') THEN
+    CREATE POLICY "Users can view relevant requests" ON quote_requests FOR SELECT USING (
+      client_id = auth.uid() OR 
+      shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+    );
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'quote_requests' AND policyname = 'Clients can insert requests') THEN
+    CREATE POLICY "Clients can insert requests" ON quote_requests FOR INSERT WITH CHECK (client_id = auth.uid());
+  END IF;
+END $$;
+
+ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'quotes' AND policyname = 'Users can view relevant quotes') THEN
+    CREATE POLICY "Users can view relevant quotes" ON quotes FOR SELECT USING (
+      client_id = auth.uid() OR 
+      shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+    );
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'quotes' AND policyname = 'Shops can insert quotes') THEN
+    CREATE POLICY "Shops can insert quotes" ON quotes FOR INSERT WITH CHECK (
+      shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+    );
+  END IF;
+END $$;
+
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Users can view relevant orders') THEN
+    CREATE POLICY "Users can view relevant orders" ON orders FOR SELECT USING (
+      client_id = auth.uid() OR 
+      shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+    );
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Clients can insert orders') THEN
+    CREATE POLICY "Clients can insert orders" ON orders FOR INSERT WITH CHECK (client_id = auth.uid());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'orders' AND policyname = 'Relevant users can update orders') THEN
+    CREATE POLICY "Relevant users can update orders" ON orders FOR UPDATE USING (
+      client_id = auth.uid() OR 
+      shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+    );
+  END IF;
+END $$;
+
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'messages' AND policyname = 'Users can view order messages') THEN
+    CREATE POLICY "Users can view order messages" ON messages FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM orders WHERE orders.id = messages.order_id AND (
+          orders.client_id = auth.uid() OR 
+          orders.shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+        )
+      )
+    );
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'messages' AND policyname = 'Users can send order messages') THEN
+    CREATE POLICY "Users can send order messages" ON messages FOR INSERT WITH CHECK (
+      auth.uid() = sender_id AND
+      EXISTS (
+        SELECT 1 FROM orders WHERE orders.id = order_id AND (
+          orders.client_id = auth.uid() OR 
+          orders.shop_id IN (SELECT id FROM shops WHERE owner_id = auth.uid())
+        )
+      )
+    );
   END IF;
 END $$;
