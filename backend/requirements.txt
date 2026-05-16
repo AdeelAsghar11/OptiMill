@@ -16,5 +16,6 @@ numpy
 redis
 fastapi-cache2[redis]
 slowapi
+jinja2
 
 
