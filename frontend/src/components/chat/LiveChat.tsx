@@ -32,10 +32,10 @@ export function LiveChat({ orderId, currentUserId }: LiveChatProps) {
   // t24 — Load existing messages
   useEffect(() => {
     const fetchMessages = async () => {
-      try {
-        const { session } = useAuthStore.getState();
-        if (!session) return;
+      const { session, isLoading: authLoading } = useAuthStore.getState();
+      if (authLoading || !session) return;
 
+      try {
         const r = await axios.get(`${API_BASE_URL}/api/v1/messages/${orderId}`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
@@ -51,6 +51,9 @@ export function LiveChat({ orderId, currentUserId }: LiveChatProps) {
 
   // t23 — Subscribe to Supabase Realtime for live updates
   useEffect(() => {
+    const { session, isLoading: authLoading } = useAuthStore.getState();
+    if (authLoading || !session) return;
+
     const channel = supabase
       .channel(`order-chat-${orderId}`)
       .on(
@@ -64,7 +67,11 @@ export function LiveChat({ orderId, currentUserId }: LiveChatProps) {
           });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log("Successfully subscribed to chat channel:", orderId);
+        }
+      });
 
     return () => { supabase.removeChannel(channel); };
   }, [orderId]);

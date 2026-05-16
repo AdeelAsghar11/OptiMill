@@ -122,11 +122,19 @@ function OrderCard({ order, index }: { order: Order; index: number }) {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const { session } = useAuthStore();
+  const { session, isLoading: authLoading } = useAuthStore();
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!session) return;
+      // Don't try to fetch if we are still checking the session
+      if (authLoading) return;
+      
+      // If we finished loading and there's no session, stop
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await axios.get(`${API_BASE_URL}/api/v1/orders/`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
@@ -141,7 +149,7 @@ export default function OrdersPage() {
     };
 
     fetchOrders();
-  }, [session]);
+  }, [session, authLoading]);
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">

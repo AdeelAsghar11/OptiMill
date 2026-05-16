@@ -21,13 +21,13 @@ interface Notification {
 }
 
 export function NotificationBell() {
-  const { user } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
+    if (authLoading || !user) return;
 
     // Initial fetch
     fetchNotifications();
