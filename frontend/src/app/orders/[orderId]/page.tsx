@@ -58,17 +58,20 @@ export default function OrderDetailPage() {
   const orderId = params?.orderId as string;
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   const currentUserId = user?.id;
 
   const fetchOrder = async () => {
-    try {
-      const session = useAuthStore.getState().session;
-      if (!session) {
-        setLoading(false);
-        return;
-      }
+    // Wait for auth session to be checked
+    if (authLoading) return;
+    
+    const session = useAuthStore.getState().session;
+    if (!session) {
+      setLoading(false);
+      return;
+    }
 
+    try {
       const res = await axios.get(`${API_BASE_URL}/api/v1/orders/${orderId}`, {
         headers: { Authorization: `Bearer ${session.access_token}` }
       });
@@ -84,7 +87,7 @@ export default function OrderDetailPage() {
   useEffect(() => {
     if (!orderId) return;
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, authLoading]);
 
   const releasePayment = async () => {
     try {
