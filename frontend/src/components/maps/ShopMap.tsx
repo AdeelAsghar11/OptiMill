@@ -20,12 +20,14 @@ L.Marker.prototype.options.icon = DefaultIcon;
 interface Shop {
   id: string;
   name: string;
-  location_city: string;
-  latitude: number;
-  longitude: number;
-  rating: number;
-  is_verified: boolean;
+  description?: string;
+  location_city?: string;
+  lat?: number;
+  lng?: number;
+  rating?: number;
+  is_verified?: boolean;
 }
+
 
 function ChangeView({ center }: { center: [number, number] }) {
   const map = useMap();
@@ -39,9 +41,10 @@ export function ShopMap({ shops, onSearchArea }: { shops: Shop[], onSearchArea?:
   const [showSearchBtn, setShowSearchBtn] = useState(false);
 
   useEffect(() => {
-    if (shops.length > 0 && shops[0].latitude && shops[0].longitude) {
-      setCenter([shops[0].latitude, shops[0].longitude]);
+    if (shops.length > 0 && shops[0].lat && shops[0].lng) {
+      setCenter([shops[0].lat, shops[0].lng]);
     }
+
     
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((pos) => {
@@ -136,8 +139,8 @@ export function ShopMap({ shops, onSearchArea }: { shops: Shop[], onSearchArea?:
           </>
         )}
         {shops.map((shop) => (
-          shop.latitude && shop.longitude && (
-            <Marker key={shop.id} position={[shop.latitude, shop.longitude]}>
+          shop.lat && shop.lng && (
+            <Marker key={shop.id} position={[shop.lat, shop.lng]}>
               <Popup>
                 <div className="p-2 min-w-[150px]">
                   <div className="flex items-center gap-2 mb-2">

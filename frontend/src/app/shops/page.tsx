@@ -18,10 +18,13 @@ interface Shop {
   name: string;
   description?: string;
   address?: string;
+  location_city?: string;
   lat?: number;
   lng?: number;
   capabilities: string[];
   materials: string[];
+  rating?: number;
+  is_verified?: boolean;
 }
 
 interface Review {
