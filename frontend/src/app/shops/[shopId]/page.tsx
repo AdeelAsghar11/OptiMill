@@ -32,7 +32,7 @@ interface ShopProfile {
   location_city: string;
   location_country: string;
   is_verified: boolean;
-  rating: number;
+  rating?: number;
   hourly_rate: number;
   capabilities: string[];
   materials: string[];
@@ -119,10 +119,10 @@ export default function ShopProfilePage() {
             <p className="text-slate-300 max-w-2xl leading-relaxed">{shop.description || "No description provided."}</p>
           </div>
           <div className="flex flex-col items-end gap-3">
-            {shop.rating > 0 && (
+            {shop.rating !== undefined && shop.rating > 0 && (
               <div className="flex flex-col items-end gap-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-3xl font-black text-yellow-400">{shop.rating?.toFixed(1)}</span>
+                  <span className="text-3xl font-black text-yellow-400">{shop.rating.toFixed(1)}</span>
                   <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
                 </div>
                 <span className="text-xs text-slate-500">{reviews.length} reviews</span>

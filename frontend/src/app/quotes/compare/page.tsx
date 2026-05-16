@@ -18,9 +18,10 @@ interface Quote {
   shop?: {
     name: string;
     address: string;
-    rating: number;
+    rating?: number;
   };
 }
+
 
 export default function QuoteComparePage() {
   const searchParams = useSearchParams();
@@ -140,12 +141,13 @@ export default function QuoteComparePage() {
                     {q.shop?.address && (
                       <span className="text-slate-500 text-xs">{q.shop.address}</span>
                     )}
-                    {q.shop?.rating > 0 && (
+                    {q.shop?.rating !== undefined && q.shop.rating > 0 && (
                       <span className="flex items-center gap-1 text-yellow-400 text-xs font-semibold">
                         <Star className="w-3 h-3 fill-yellow-400" />
-                        {q.shop.rating?.toFixed(1)}
+                        {q.shop.rating.toFixed(1)}
                       </span>
                     )}
+
                   </div>
                 </div>
 
