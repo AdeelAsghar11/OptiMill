@@ -7,6 +7,7 @@ import {
   XCircle, Loader2, ExternalLink
 } from "lucide-react";
 import axios from "axios";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
