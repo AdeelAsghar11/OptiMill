@@ -31,13 +31,29 @@ import { ExternalSupplierList } from "./ExternalSupplierList";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+interface AnalysisResult {
+  id: string;
+  file_name: string;
+  file_url: string;
+  feasibility_score: number;
+  process_recommendation: string;
+  estimated_cost_low: number;
+  estimated_cost_high: number;
+  analysis: {
+    design_type: string;
+    design_category: string;
+    complexity: string;
+    materials: string[];
+  };
+}
+
 export function CADUploader() {
   const searchParams = useSearchParams();
   const directShopId = searchParams?.get("shop");
   
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
