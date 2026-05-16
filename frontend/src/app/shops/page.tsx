@@ -88,7 +88,7 @@ export default function ShopsPage() {
     s.description?.toLowerCase().includes(search.toLowerCase()) ||
     s.address?.toLowerCase().includes(search.toLowerCase())
   ).sort((a, b) => {
-    if (userLocation && a.lat && b.lat) {
+    if (userLocation && a.lat !== undefined && a.lng !== undefined && b.lat !== undefined && b.lng !== undefined) {
       const distA = calculateDistance(userLocation.lat, userLocation.lon, a.lat, a.lng);
       const distB = calculateDistance(userLocation.lat, userLocation.lon, b.lat, b.lng);
       return distA - distB;

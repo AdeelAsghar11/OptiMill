@@ -17,9 +17,10 @@ interface Shop {
   hourly_rate?: number;
   rating?: number;
   is_verified?: boolean;
-  latitude?: number;
-  longitude?: number;
+  lat?: number;
+  lng?: number;
 }
+
 
 interface ShopCardProps {
   shop: Shop;
@@ -28,8 +29,8 @@ interface ShopCardProps {
 }
 
 export function ShopCard({ shop, index, userLocation }: ShopCardProps) {
-  const distance = (userLocation && shop.latitude && shop.longitude)
-    ? calculateDistance(userLocation.lat, userLocation.lon, shop.latitude, shop.longitude)
+  const distance = (userLocation && shop.lat !== undefined && shop.lng !== undefined)
+    ? calculateDistance(userLocation.lat, userLocation.lon, shop.lat, shop.lng)
     : null;
 
   return (
