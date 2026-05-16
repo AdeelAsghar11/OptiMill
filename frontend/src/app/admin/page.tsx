@@ -10,13 +10,51 @@ import axios from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+interface StatData {
+  conversion_rate: number;
+  total_recommended_orders: number;
+  total_orders: number;
+}
+
+interface Rule {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+}
+
+interface UserProfile {
+  id: string;
+  full_name: string | null;
+  email: string;
+  role: string;
+  created_at: string;
+}
+
+interface Shop {
+  id: string;
+  name: string;
+  verified: boolean;
+  profiles?: {
+    full_name: string | null;
+  };
+}
+
+interface Mapping {
+  id: string;
+  design_type: string;
+  material_name: string;
+  typical_quantity_range: string;
+  use_case: string;
+}
+
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [rules, setRules] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [shops, setShops] = useState([]);
-  const [mappings, setMappings] = useState([]);
-  const [stats, setStats] = useState({ conversion_rate: 0, total_recommended_orders: 0, total_orders: 0 });
+  const [rules, setRules] = useState<Rule[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [mappings, setMappings] = useState<Mapping[]>([]);
+  const [stats, setStats] = useState<StatData>({ conversion_rate: 0, total_recommended_orders: 0, total_orders: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +89,7 @@ export default function AdminPanel() {
     }
   };
 
-  const toggleVerifyShop = async (shopId, currentStatus) => {
+  const toggleVerifyShop = async (shopId: string, currentStatus: boolean) => {
     try {
       await axios.patch(`${API_BASE_URL}/api/v1/admin/shops/${shopId}/verify`, null, {
         params: { verified: !currentStatus }
@@ -290,7 +328,7 @@ export default function AdminPanel() {
   );
 }
 
-function StatCard({ title, value, icon: Icon, color }) {
+function StatCard({ title, value, icon: Icon, color }: { title: string; value: string | number; icon: React.ElementType; color: string }) {
   return (
     <div className="glass p-8 rounded-3xl relative overflow-hidden group">
       <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/5 transition-transform group-hover:scale-150 duration-700`} />
