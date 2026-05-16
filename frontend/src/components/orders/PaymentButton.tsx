@@ -5,32 +5,31 @@ import { CreditCard, Loader2, CheckCircle } from "lucide-react";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 
+import { MockCreditCardForm } from "./MockCreditCardForm";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
 
 export function PaymentButton({ orderId, amount }: { orderId: string, amount: number }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const handlePayment = async () => {
-    if (!confirm(`Simulate Payment for $${amount.toLocaleString()}?\n\nThis will hold the funds in mock escrow and alert the shop.`)) return;
-    
+  const handleMockSuccess = async () => {
     setLoading(true);
+    setShowModal(false);
     try {
       const { session } = (await import("@/store/useAuthStore")).useAuthStore.getState();
       
-      // Call our mock-pay endpoint
       await axios.post(`${API_BASE_URL}/api/v1/payments/mock-pay`, 
         { order_id: orderId },
         { headers: { Authorization: `Bearer ${session?.access_token}` } }
       );
       
       setSuccess(true);
-      // Reload the page after a short delay to show the new status
-      setTimeout(() => window.location.reload(), 1500);
+      setTimeout(() => window.location.reload(), 2000);
     } catch (e) {
       console.error(e);
-      alert("Mock payment failed. Check console for details.");
+      alert("Mock payment failed backend sync.");
     } finally {
       setLoading(false);
     }
@@ -45,13 +44,23 @@ export function PaymentButton({ orderId, amount }: { orderId: string, amount: nu
   }
 
   return (
-    <button
-      onClick={handlePayment}
-      disabled={loading}
-      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
-    >
-      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-      Pay ${amount.toLocaleString()} (Escrow Hold)
-    </button>
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        disabled={loading}
+        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
+      >
+        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+        Pay ${amount.toLocaleString()} (Escrow Hold)
+      </button>
+
+      {showModal && (
+        <MockCreditCardForm 
+          amount={amount}
+          onSuccess={handleMockSuccess}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </>
   );
 }
