@@ -13,23 +13,24 @@ export function PaymentButton({ orderId, amount }: { orderId: string, amount: nu
   const [success, setSuccess] = useState(false);
 
   const handlePayment = async () => {
+    if (!confirm(`Simulate Payment for $${amount.toLocaleString()}?\n\nThis will hold the funds in mock escrow and alert the shop.`)) return;
+    
     setLoading(true);
     try {
-      // 1. Create PaymentIntent on backend
-      const res = await axios.post(`${API_BASE_URL}/api/v1/payments/create-intent`, { order_id: orderId });
-      const { clientSecret } = res.data;
-
-      // 2. Load Stripe and open checkout
-      // For this MVP, we'll use a simple alert or redirect to simulate the flow
-      // In a real app, we'd use Elements or Checkout
-      alert(`Stripe Payment Intent Created: ${clientSecret}\n\nIn a production environment, this would open the Stripe payment sheet.`);
+      const { session } = (await import("@/store/useAuthStore")).useAuthStore.getState();
       
-      // Simulate success for now (since we don't have a real Stripe key/UI here)
-      // In reality, the webhook would update the status to 'paid'
+      // Call our mock-pay endpoint
+      await axios.post(`${API_BASE_URL}/api/v1/payments/mock-pay`, 
+        { order_id: orderId },
+        { headers: { Authorization: `Bearer ${session?.access_token}` } }
+      );
+      
       setSuccess(true);
+      // Reload the page after a short delay to show the new status
+      setTimeout(() => window.location.reload(), 1500);
     } catch (e) {
       console.error(e);
-      alert("Payment initiation failed.");
+      alert("Mock payment failed. Check console for details.");
     } finally {
       setLoading(false);
     }

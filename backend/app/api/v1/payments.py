@@ -15,7 +15,19 @@ if settings.STRIPE_SECRET_KEY:
 class PaymentIntentCreate(BaseModel):
     order_id: str
 
-@router.post("/create-intent")
+@router.post("/mock-pay")
+async def mock_payment(data: PaymentIntentCreate, current_user: dict = Depends(get_current_user)):
+    """Simulate a successful escrow payment for prototype purposes."""
+    try:
+        # Update order status to 'paid' (Escrow Hold)
+        supabase.table("orders").update({
+            "status": "paid",
+            "payment_intent_id": f"mock_pi_{data.order_id}"
+        }).eq("id", data.order_id).eq("client_id", current_user["id"]).execute()
+        
+        return {"status": "success", "message": "Mock payment authorized and held in escrow"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 async def create_payment_intent(data: PaymentIntentCreate, current_user: dict = Depends(get_current_user)):
     """
     t27/t28 — Create a Stripe PaymentIntent with capture_method='manual' (Escrow).
@@ -102,8 +114,11 @@ async def release_payment(order_id: str, current_user: dict = Depends(get_curren
         if not intent_id:
             raise HTTPException(status_code=400, detail="No payment intent found for this order.")
 
-        # 2. Capture the payment
-        stripe.PaymentIntent.capture(intent_id)
+        # 2. Capture the payment (Skip Stripe for mock intents)
+        if not intent_id.startswith("mock_"):
+            if not settings.STRIPE_SECRET_KEY:
+                raise HTTPException(status_code=500, detail="Stripe not configured for real payment capture.")
+            stripe.PaymentIntent.capture(intent_id)
 
         # 3. Update order status
         supabase.table("orders").update({
