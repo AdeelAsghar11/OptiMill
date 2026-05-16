@@ -13,3 +13,8 @@ openai
 stripe
 python-multipart
 numpy
+redis
+fastapi-cache2[redis]
+slowapi
+
+

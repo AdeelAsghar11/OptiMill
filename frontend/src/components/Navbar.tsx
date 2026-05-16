@@ -145,7 +145,7 @@ export function Navbar() {
               {isActive && (
                 <motion.div 
                   layoutId="mobile-nav-dot"
-                  className="absolute -bottom-1 w-1 h-1 bg-blue-500 rounded-full"
+                  className="absolute -bottom-2 w-1 h-1 bg-blue-500 rounded-full"
                 />
               )}
             </Link>

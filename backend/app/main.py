@@ -16,12 +16,32 @@ from app.api.v1.meetings import router as meetings_router
 from app.api.v1.payments import router as payments_router
 from app.api.v1.locations import router as locations_router
 from app.api.v1.external_suppliers import router as external_suppliers_router
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
+from contextlib import asynccontextmanager
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from app.core.limiter import limiter
+import os
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    redis = aioredis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"), encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    yield
 
 app = FastAPI(
     title="OptiMill: AI-Powered CAD Marketplace",
     description="Cross-platform marketplace for CAD analysis, manufacturing matching, and escrow payments.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 
 # Configure CORS
 app.add_middleware(

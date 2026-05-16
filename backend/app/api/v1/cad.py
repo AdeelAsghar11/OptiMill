@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from app.supabase import supabase
 from app.auth.utils import get_current_user
 from app.core.config import settings
+from app.core.limiter import limiter
 import json
 import logging
 import os
@@ -9,6 +10,8 @@ import tempfile
 from app.models.design_classifier import DesignClassifier
 from app.models.material_extractor import MaterialExtractor
 from app.services.recommendation_engine import RecommendationEngine
+from fastapi_cache.decorator import cache
+
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +112,9 @@ def _analyze_cad_metadata(filename: str, content_type: str, size: int, geo_featu
 # ── Routes ──────────────────────────────────────────────────────────────────────
 
 @router.post("/upload")
+@limiter.limit("5/minute")
 async def upload_and_analyze_cad(
+    request: Request,
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user),
 ):
@@ -217,6 +222,7 @@ async def get_cad_analysis(file_id: str, current_user: dict = Depends(get_curren
 
 
 @router.get("/{file_id}/recommendations")
+@cache(expire=3600)
 async def get_shop_recommendations(file_id: str, limit: int = 10, current_user: dict = Depends(get_current_user)):
     """
     Returns top recommended shops for the given CAD file.

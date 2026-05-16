@@ -538,33 +538,12 @@ CREATE INDEX idx_external_supplier_type ON external_suppliers(supplier_type);
 
 **Frontend Tasks:**
 
-- `t73` Configure PWA manifest and service worker for mobile installability
-  - Add `manifest.json` to Vite public folder
-  - Implement service worker for offline support
-  - Icon set for app home screen
-  - Splash screen configuration
+- [x] `t73` Configure PWA manifest and service worker for mobile installability
+- [x] `t74` Mobile responsiveness audit
+- [x] `t75` Performance optimization (DB indexes, Redis caching)
+- [x] `t76` Security hardening (RLS verification, Rate limiting)
+- [ ] `t77` End-to-end testing: CAD upload → classification → materials → recommendations → quote → payment
 
-- `t74` Mobile responsiveness audit
-  - Test all new pages on mobile (iPhone, Android)
-  - Fix layout issues in map component
-  - Optimize images for mobile bandwidth
-
-**Backend Tasks:**
-
-- `t75` Performance optimization
-  - Database query optimization (add indexes as needed)
-  - API response time targets: < 500ms for recommendations
-  - Caching strategy for frequently accessed data (Redis)
-
-- `t76` Security hardening
-  - SQL injection prevention (parameterized queries)
-  - RLS verification on all Supabase tables
-  - Input validation and sanitization
-  - Rate limiting on public endpoints
-
-**Testing Tasks (All Members):**
-
-- `t77` End-to-end testing: CAD upload → classification → materials → recommendations → quote → payment
   - Test on both web and mobile
   - Test multiple design types
   - Test edge cases (unusual CAD files, missing location data, etc.)

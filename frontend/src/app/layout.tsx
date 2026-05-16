@@ -12,6 +12,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "OptiMill — AI-Powered CAD Marketplace",
   description: "Find verified CNC and 3D printing shops. Upload your CAD design and get instant AI-powered feasibility analysis and quotes.",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({
