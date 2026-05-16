@@ -34,7 +34,12 @@ export function MeetingScheduler({ orderId }: MeetingSchedulerProps) {
   });
 
   const fetchMeetings = () => {
-    axios.get(`${API_BASE_URL}/api/v1/meetings/${orderId}`)
+    const session = useAuthStore.getState().session;
+    if (!session) return;
+
+    axios.get(`${API_BASE_URL}/api/v1/meetings/${orderId}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` }
+    })
       .then((r) => setMeetings(r.data))
       .catch(() => setMeetings([]))
       .finally(() => setLoading(false));
@@ -46,6 +51,9 @@ export function MeetingScheduler({ orderId }: MeetingSchedulerProps) {
     if (!form.title || !form.scheduled_at) return;
     setSubmitting(true);
     try {
+      const session = useAuthStore.getState().session;
+      if (!session) return;
+
       await axios.post(`${API_BASE_URL}/api/v1/meetings/`, {
         order_id: orderId,
         title: form.title,
@@ -53,6 +61,8 @@ export function MeetingScheduler({ orderId }: MeetingSchedulerProps) {
         duration_minutes: parseInt(form.duration_minutes),
         meeting_url: form.meeting_url || null,
         notes: form.notes || null,
+      }, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
       });
       setShowForm(false);
       setForm({ title: "", scheduled_at: "", duration_minutes: "60", meeting_url: "", notes: "" });
@@ -66,7 +76,12 @@ export function MeetingScheduler({ orderId }: MeetingSchedulerProps) {
 
   const handleUpdate = async (meetingId: string, status: string) => {
     try {
-      await axios.patch(`${API_BASE_URL}/api/v1/meetings/${meetingId}`, { status });
+      const session = useAuthStore.getState().session;
+      if (!session) return;
+
+      await axios.patch(`${API_BASE_URL}/api/v1/meetings/${meetingId}`, { status }, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
       setMeetings((prev) => prev.map((m) => m.id === meetingId ? { ...m, status } : m));
     } catch (e) {
       console.error(e);
