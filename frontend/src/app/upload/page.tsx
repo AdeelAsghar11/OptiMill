@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { CADUploader } from "@/components/cad/CADUploader";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -31,7 +31,9 @@ export default function UploadPage() {
       </header>
 
       <section>
-        <CADUploader />
+        <Suspense fallback={<div className="h-[400px] w-full glass rounded-3xl animate-pulse flex items-center justify-center text-slate-500 font-bold tracking-widest uppercase text-xs">Loading Uploader...</div>}>
+          <CADUploader />
+        </Suspense>
       </section>
     </main>
   );

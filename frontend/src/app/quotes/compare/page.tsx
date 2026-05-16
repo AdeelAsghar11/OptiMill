@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Star, Clock, DollarSign, CheckCircle2, Loader2, ArrowLeft, Zap } from "lucide-react";
 import axios from "axios";
@@ -23,7 +23,7 @@ interface Quote {
 }
 
 
-export default function QuoteComparePage() {
+function QuoteCompareContent() {
   const searchParams = useSearchParams();
   const cadFileId = searchParams?.get("cad_file_id");
   const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -197,5 +197,13 @@ export default function QuoteComparePage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function QuoteComparePage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>}>
+      <QuoteCompareContent />
+    </Suspense>
   );
 }
