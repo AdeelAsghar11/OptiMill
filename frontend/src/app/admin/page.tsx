@@ -328,7 +328,7 @@ export default function AdminPanel() {
   );
 }
 
-function StatCard({ title, value, icon: Icon, color }: { title: string; value: string | number; icon: React.ElementType; color: string }) {
+function StatCard({ title, value, icon: Icon, color }: { title: string; value: string | number; icon: any; color: string }) {
   return (
     <div className="glass p-8 rounded-3xl relative overflow-hidden group">
       <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/5 transition-transform group-hover:scale-150 duration-700`} />
