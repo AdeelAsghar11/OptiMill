@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-...
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Mail, Lock, Cpu, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useRouter, useSearchParams } from "next/navigation";
+
 function RegisterForm() {
   const searchParams = useSearchParams();
   const initialRole = searchParams.get("role") as "client" | "shop" || "client";
