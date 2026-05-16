@@ -13,13 +13,31 @@ import axios from "axios";
 import { ShopCard } from "@/components/shops/ShopCard";
 import { calculateDistance } from "@/lib/geo";
 
+interface Shop {
+  id: string;
+  name: string;
+  description?: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  capabilities: string[];
+  materials: string[];
+}
+
+interface Review {
+  id: string;
+  user: string;
+  rating: number;
+  comment: string;
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 const ALL_CAPABILITIES = ["CNC Milling", "3D Printing (FDM)", "3D Printing (SLA)", "Laser Cutting", "Injection Molding", "Sheet Metal", "Welding"];
 const ALL_MATERIALS = ["Aluminum", "Steel", "PLA", "ABS", "PETG", "Resin", "Titanium", "Carbon Fiber"];
 
 export default function ShopsPage() {
-  const [shops, setShops] = useState<any[]>([]);
+  const [shops, setShops] = useState<Shop[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCap, setSelectedCap] = useState<string | null>(null);

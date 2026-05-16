@@ -25,10 +25,32 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+interface ShopProfile {
+  id: string;
+  name: string;
+  description: string;
+  location_city: string;
+  location_country: string;
+  is_verified: boolean;
+  rating: number;
+  hourly_rate: number;
+  capabilities: string[];
+  materials: string[];
+}
+
+interface ShopReview {
+  id: string;
+  rating: number;
+  comment: string;
+  profiles?: {
+    full_name: string | null;
+  };
+}
+
 export default function ShopProfilePage() {
   const params = useParams();
   const shopId = params?.shopId as string;
-  const [data, setData] = useState<{ shop: any; reviews: any[] } | null>(null);
+  const [data, setData] = useState<{ shop: ShopProfile; reviews: ShopReview[] } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -152,7 +174,7 @@ export default function ShopProfilePage() {
               <p className="text-slate-600 text-sm">No reviews yet. Be the first!</p>
             ) : (
               <div className="space-y-5">
-                {reviews.map((r: any) => (
+                {reviews.map((r: ShopReview) => (
                   <div key={r.id} className="border-b border-white/5 pb-5 last:border-0">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-semibold text-sm">{r.profiles?.full_name || "Anonymous"}</span>

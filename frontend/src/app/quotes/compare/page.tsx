@@ -10,10 +10,22 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+interface Quote {
+  id: string;
+  amount: number;
+  delivery_days: number;
+  notes?: string;
+  shop?: {
+    name: string;
+    address: string;
+    rating: number;
+  };
+}
+
 export default function QuoteComparePage() {
   const searchParams = useSearchParams();
   const cadFileId = searchParams?.get("cad_file_id");
-  const [quotes, setQuotes] = useState<any[]>([]);
+  const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState<string | null>(null);
   const [accepted, setAccepted] = useState<string | null>(null);

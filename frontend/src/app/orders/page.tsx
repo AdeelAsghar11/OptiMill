@@ -29,6 +29,20 @@ const STAGE_COLORS: Record<string, string> = {
   complete:    "border-green-500/50 bg-green-500/10 text-green-400",
 };
 
+interface Order {
+  id: string;
+  amount: number;
+  status: string;
+  cad_files?: {
+    file_name: string;
+  };
+  shops?: {
+    name: string;
+    location_city: string | null;
+  };
+}
+
+
 function OrderProgress({ status }: { status: string }) {
   const currentIdx = ORDER_STAGES.indexOf(status);
   return (
@@ -63,7 +77,7 @@ function OrderProgress({ status }: { status: string }) {
   );
 }
 
-function OrderCard({ order, index }: { order: any; index: number }) {
+function OrderCard({ order, index }: { order: Order; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -106,7 +120,7 @@ function OrderCard({ order, index }: { order: any; index: number }) {
 }
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { session } = useAuthStore();
 

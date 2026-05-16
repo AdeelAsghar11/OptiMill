@@ -49,7 +49,7 @@ export function ShopRecommendationList({ cadFileId, directShopId }: { cadFileId:
         let data = res.data;
         
         // If directShopId is provided and not in the list, fetch it and add it
-        if (directShopId && !data.find((s: any) => s.id === directShopId)) {
+        if (directShopId && !data.find((s: Recommendation) => s.id === directShopId)) {
           const shopRes = await axios.get(`${API_BASE_URL}/api/v1/shops/${directShopId}`);
           if (shopRes.data?.shop) {
             const directShop = {
@@ -69,7 +69,7 @@ export function ShopRecommendationList({ cadFileId, directShopId }: { cadFileId:
         setRecommendations(data);
         
         // Auto-select all by default
-        setSelectedIds(new Set(data.map((s: any) => s.id)));
+        setSelectedIds(new Set(data.map((s: Recommendation) => s.id)));
       } catch (e) {
         console.error("Failed to fetch recommendations:", e);
       } finally {
