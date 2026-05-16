@@ -31,13 +31,21 @@ class MeetingUpdate(BaseModel):
 async def schedule_meeting(data: MeetingCreate, current_user: dict = Depends(get_current_user)):
     """Schedule a consultation meeting for a specific order."""
     try:
+        # Get order details to populate client/shop IDs
+        order = supabase.table("orders").select("client_id, shop_id").eq("id", data.order_id).single().execute()
+        if not order.data:
+            raise HTTPException(status_code=404, detail="Order not found.")
+
+        # Insert meeting with correct columns from schema
         res = supabase.table("meetings").insert({
             "order_id": data.order_id,
-            "organizer_id": current_user["id"],
+            "host_id": current_user["id"],
+            "client_id": order.data["client_id"],
+            "shop_id": order.data["shop_id"],
             "title": data.title,
             "scheduled_at": data.scheduled_at.isoformat(),
             "duration_minutes": data.duration_minutes,
-            "meeting_url": data.meeting_url,
+            "meet_link": data.meeting_url,
             "notes": data.notes,
             "status": "scheduled",
         }).execute()
