@@ -88,7 +88,7 @@ export function MaterialList({ cadFileId }: { cadFileId: string }) {
                 {category}
               </h5>
               <div className="space-y-2">
-                {list.map((mat) => (
+                {(list as Material[]).map((mat: Material) => (
                   <motion.div
                     key={mat.id}
                     whileHover={{ scale: 1.02, x: 5 }}
