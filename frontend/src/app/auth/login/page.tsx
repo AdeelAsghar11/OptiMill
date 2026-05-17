@@ -42,10 +42,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center p-6 bg-[#0a0a0b] relative overflow-hidden">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center p-6 bg-[var(--background)] relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none dark:bg-blue-500/20" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none dark:bg-indigo-500/20" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -59,49 +59,24 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Demo Test Accounts Banner */}
-        <div className="mb-6 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
-          <h3 className="text-xs font-black uppercase tracking-widest text-blue-400 mb-3 flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5" /> Demo Test Accounts
-          </h3>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button 
-              type="button"
-              onClick={() => { setEmail("client@optimill.com"); setPassword("password123"); }}
-              className="flex-1 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-left group"
-            >
-              <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Client View</div>
-              <div className="text-xs text-slate-300 font-mono">client@optimill.com</div>
-            </button>
-            <button 
-              type="button"
-              onClick={() => { setEmail("shop@optimill.com"); setPassword("password123"); }}
-              className="flex-1 py-2 px-3 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-colors text-left group"
-            >
-              <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider mb-1">Shop Owner View</div>
-              <div className="text-xs text-indigo-200 font-mono">shop@optimill.com</div>
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-2xl">
-          <h1 className="text-3xl font-bold text-white mb-2 text-center tracking-tight">
+        <div className="glass-card p-8 shadow-2xl">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2 text-center tracking-tight">
             Welcome back
           </h1>
-          <p className="text-slate-400 text-center mb-8 text-sm">
+          <p className="text-slate-600 dark:text-slate-400 text-center mb-8 text-sm">
             Log in to continue to OptiMill.
           </p>
 
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-400">{error}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300 ml-1">Email</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <input
@@ -109,7 +84,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  className="w-full bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl py-3 pl-11 pr-4 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                   placeholder="you@example.com"
                 />
               </div>
@@ -117,8 +92,8 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between ml-1">
-                <label className="text-sm font-medium text-slate-300">Password</label>
-                <Link href="#" className="text-xs text-blue-400 hover:text-blue-300">
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Password</label>
+                <Link href="#" className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
                   Forgot password?
                 </Link>
               </div>
@@ -129,7 +104,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  className="w-full bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl py-3 pl-11 pr-4 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -152,9 +127,9 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center mt-6 text-sm text-slate-400">
+        <p className="text-center mt-6 text-sm text-slate-600 dark:text-slate-400">
           Don't have an account?{" "}
-          <Link href="/auth/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+          <Link href="/auth/register" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
             Sign up
           </Link>
         </p>
