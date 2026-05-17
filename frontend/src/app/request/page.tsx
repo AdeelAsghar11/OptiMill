@@ -195,7 +195,7 @@ function RequestContent() {
                   </div>
                   <h3 className="text-2xl font-black text-emerald-400">Requests Dispatched</h3>
                   <p className="text-slate-400">Your custom order requests have been sent to {selectedShopIds.size} partners.</p>
-                  <Link href="/dashboard/client" className="mt-4 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
+                  <Link href="/dashboard" className="mt-4 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
                     Go to Dashboard
                   </Link>
                 </div>
