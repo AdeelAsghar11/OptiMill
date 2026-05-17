@@ -146,3 +146,137 @@
 .perspective-1000 {
   perspective: 1000px;
 }
+
+/* --- Light Mode Color Conflict Fixes --- */
+.light {
+  --foreground: #0f172a;
+  --background: #f8fafc;
+}
+
+.light .text-white:not(
+  .btn-premium, .btn-premium *, 
+  button, button *, 
+  a.btn-premium, a.btn-premium *,
+  [class*="bg-blue-"], [class*="bg-blue-"] *,
+  [class*="bg-indigo-"], [class*="bg-indigo-"] *,
+  [class*="bg-emerald-"], [class*="bg-emerald-"] *,
+  [class*="bg-red-"], [class*="bg-red-"] *,
+  .active, .active *
+) {
+  color: #0f172a !important;
+}
+
+.light .text-slate-100:not(
+  .btn-premium, .btn-premium *, 
+  button, button *, 
+  a.btn-premium, a.btn-premium *,
+  [class*="bg-blue-"], [class*="bg-blue-"] *,
+  [class*="bg-indigo-"], [class*="bg-indigo-"] *,
+  [class*="bg-emerald-"], [class*="bg-emerald-"] *,
+  [class*="bg-red-"], [class*="bg-red-"] *,
+  .active, .active *
+) {
+  color: #0f172a !important;
+}
+
+.light .text-slate-200:not(
+  .btn-premium, .btn-premium *, 
+  button, button *, 
+  a.btn-premium, a.btn-premium *,
+  [class*="bg-blue-"], [class*="bg-blue-"] *,
+  [class*="bg-indigo-"], [class*="bg-indigo-"] *,
+  [class*="bg-emerald-"], [class*="bg-emerald-"] *,
+  [class*="bg-red-"], [class*="bg-red-"] *,
+  .active, .active *
+) {
+  color: #1e293b !important;
+}
+
+.light .text-slate-300:not(
+  .btn-premium, .btn-premium *, 
+  button, button *, 
+  a.btn-premium, a.btn-premium *,
+  [class*="bg-blue-"], [class*="bg-blue-"] *,
+  [class*="bg-indigo-"], [class*="bg-indigo-"] *,
+  [class*="bg-emerald-"], [class*="bg-emerald-"] *,
+  [class*="bg-red-"], [class*="bg-red-"] *
+) {
+  color: #334155 !important;
+}
+
+.light .text-slate-400:not(
+  .btn-premium, .btn-premium *, 
+  button, button *, 
+  a.btn-premium, a.btn-premium *,
+  [class*="bg-blue-"], [class*="bg-blue-"] *,
+  [class*="bg-indigo-"], [class*="bg-indigo-"] *,
+  [class*="bg-emerald-"], [class*="bg-emerald-"] *,
+  [class*="bg-red-"], [class*="bg-red-"] *
+) {
+  color: #475569 !important;
+}
+
+.light .text-slate-500:not(
+  .btn-premium, .btn-premium *, 
+  button, button *, 
+  a.btn-premium, a.btn-premium *,
+  [class*="bg-blue-"], [class*="bg-blue-"] *,
+  [class*="bg-indigo-"], [class*="bg-indigo-"] *,
+  [class*="bg-emerald-"], [class*="bg-emerald-"] *,
+  [class*="bg-red-"], [class*="bg-red-"] *
+) {
+  color: #64748b !important;
+}
+
+/* Specific headings and custom typography elements */
+.light h1, .light h2, .light h3, .light h4, .light h5, .light h6, .light p.font-black {
+  color: #0f172a !important;
+}
+
+.light p, .light span, .light label, .light li {
+  /* Only apply fallback dark text to unstyled text items in light mode to guarantee contrast */
+  color: inherit;
+}
+
+.light .hover\:text-white:hover:not(.btn-premium, .btn-premium *, button, button *, [class*="bg-blue-"], [class*="bg-blue-"] *),
+.light .hover\:text-slate-200:hover:not(.btn-premium, .btn-premium *, button, button *, [class*="bg-blue-"], [class*="bg-blue-"] *) {
+  color: #0f172a !important;
+}
+
+/* Handle background cards */
+.light .bg-slate-950 {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-slate-900 {
+  background-color: #f1f5f9 !important;
+}
+
+.light .bg-slate-900\/50,
+.light .bg-slate-900\/80 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.light .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+
+.light .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Borders should be light gray instead of dark white/10 */
+.light .border-slate-800,
+.light .border-white\/10,
+.light .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Custom scrollbar adjustments for light mode */
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.15) !important;
+  border: 3px solid #f8fafc !important;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.25) !important;
+}
