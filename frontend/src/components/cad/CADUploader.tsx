@@ -129,7 +129,7 @@ export function CADUploader() {
                 {file ? file.name : "Upload Engineering Asset"}
               </h3>
               <p className="text-slate-400 max-w-sm mx-auto text-xs md:text-sm leading-relaxed">
-                Seamlessly analyze .stl, .step, or .obj files. Our AI engine will evaluate geometry, complexity, and costs in seconds.
+                Seamlessly analyze .stl, .step, .stp, .iges, .igs, .obj, .sldprt, .f3d, or .dxf files. Our AI engine will evaluate geometry, complexity, and costs in seconds.
               </p>
             </div>
             
@@ -138,7 +138,7 @@ export function CADUploader() {
               id="cad-upload"
               className="hidden"
               onChange={handleFileChange}
-              accept=".stl,.obj,.step,.iges"
+              accept=".stl,.obj,.step,.stp,.iges,.igs,.sldprt,.sldasm,.f3d,.dxf,.dwg,.sat,.ipt,.prt"
             />
             
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4">
