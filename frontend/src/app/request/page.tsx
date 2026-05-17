@@ -14,7 +14,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 const ALL_CAPABILITIES = ["CNC Milling", "3D Printing (FDM)", "3D Printing (SLA)", "Laser Cutting", "Injection Molding", "Sheet Metal", "Welding"];
 const ALL_MATERIALS = ["Aluminum", "Steel", "PLA", "ABS", "PETG", "Resin", "Titanium", "Carbon Fiber"];
 
-export default function ManualRequestPage() {
+function RequestContent() {
   const [description, setDescription] = useState("");
   const [capability, setCapability] = useState("");
   const [material, setMaterial] = useState("");
@@ -251,5 +251,13 @@ export default function ManualRequestPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function ManualRequestPage() {
+  return (
+    <React.Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>}>
+      <RequestContent />
+    </React.Suspense>
   );
 }
