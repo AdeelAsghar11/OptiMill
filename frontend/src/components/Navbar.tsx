@@ -8,6 +8,7 @@ import { Cpu, Upload, Store, LayoutDashboard, Package, LogOut, Settings, Menu, X
 import { useAuthStore } from "@/store/useAuthStore";
 import { supabase } from "@/lib/supabase";
 import { NotificationBell } from "./notifications/NotificationBell";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
   { label: "Home", href: "/", icon: LayoutDashboard },
@@ -94,6 +95,7 @@ export function Navbar() {
                   <span className="text-xs font-bold text-slate-100">{user.user_metadata?.full_name || "Account"}</span>
                   <span className="text-[10px] text-slate-500 font-medium">{user.email}</span>
                 </div>
+                <ThemeToggle />
                 <NotificationBell />
                 <button
                   onClick={handleLogout}
@@ -105,6 +107,7 @@ export function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
+                <ThemeToggle />
                 <Link
                   href="/auth/login"
                   className="px-3 md:px-5 py-2 rounded-xl text-xs text-slate-400 hover:text-white transition-colors font-bold uppercase tracking-widest"
