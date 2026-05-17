@@ -21,11 +21,61 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { supabase } from "@/lib/supabase";
 
 const steps = [
-  { id: 1, title: "Submit", icon: Layers, desc: "Input manufacturing requirements and upload 3D models." },
-  { id: 2, title: "Analyze", icon: Activity, desc: "Rule-based quality risk scoring and AI design classification." },
-  { id: 3, title: "Match", icon: Cpu, desc: "Find optimal production lines and fabricators globally." },
-  { id: 4, title: "Quote", icon: DollarSign, desc: "Deterministic cost calculation and instant quote generation." },
-  { id: 5, title: "Schedule", icon: Calendar, desc: "Risk-buffered timeline and production scheduling." },
+  { 
+    id: 1, 
+    title: "Submit", 
+    icon: Layers, 
+    desc: "Input manufacturing requirements and upload 3D models.",
+    features: [
+      "Multi-Format CAD Ingestion (STEP, IGES, STL, OBJ)",
+      "Detailed manufacturing constraints (tolerance, threading, surface finish)",
+      "Direct material and process assignment matching your budget"
+    ]
+  },
+  { 
+    id: 2, 
+    title: "Analyze", 
+    icon: Activity, 
+    desc: "Rule-based quality risk scoring and AI design classification.",
+    features: [
+      "Automatic volume, bounding box, and surface area extraction",
+      "Geometric feature recognition (wall thickness, holes, complex pockets)",
+      "Automated design feasibility and manufacturing readiness scoring"
+    ]
+  },
+  { 
+    id: 3, 
+    title: "Match", 
+    icon: Cpu, 
+    desc: "Find optimal production lines and fabricators globally.",
+    features: [
+      "Multi-criteria recommendation scoring (capabilities, materials, ratings)",
+      "Real-time geospatial distance and proximity optimization",
+      "Dynamic vendor workload and active capacity matching"
+    ]
+  },
+  { 
+    id: 4, 
+    title: "Quote", 
+    icon: DollarSign, 
+    desc: "Deterministic cost calculation and instant quote generation.",
+    features: [
+      "Machine-specific hourly rate and setup cost calculation",
+      "Volume-based material pricing and real-time supplier quotes",
+      "Detailed structural breakdown (processing, material, and platform fees)"
+    ]
+  },
+  { 
+    id: 5, 
+    title: "Schedule", 
+    icon: Calendar, 
+    desc: "Risk-buffered timeline and production scheduling.",
+    features: [
+      "Dynamic turnaround buffering based on historical lead times",
+      "Milestone-based stage tracking (paid, in progress, QA, shipped)",
+      "Integrated live communication and secure video/chat meeting slots"
+    ]
+  },
 ];
 
 export default function Dashboard() {
@@ -175,10 +225,10 @@ export default function Dashboard() {
                 </div>
                 
                 <ul className="space-y-4">
-                  {[1, 2, 3].map((item) => (
-                    <li key={item} className="flex items-center gap-3 text-slate-300 font-medium">
+                  {steps[activeStep - 1].features.map((feature, index) => (
+                    <li key={index} className="flex items-center gap-3 text-slate-300 font-medium">
                       <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                      Deterministic Feature {activeStep}.{item}
+                      {feature}
                     </li>
                   ))}
                 </ul>
