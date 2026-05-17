@@ -24,10 +24,13 @@ export default function UploadPage() {
         >
           Analyze your <span className="text-blue-500">Design</span>
         </motion.h1>
-        <p className="text-slate-400 max-w-xl">
+        <p className="text-slate-400 max-w-xl mb-4">
           Upload your CAD design to get an instant AI-powered report on manufacturability, 
           estimated costs, and complexity.
         </p>
+        <Link href="/request" className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-bold uppercase tracking-widest transition-colors">
+          Don't have a CAD file? Create a Custom Request →
+        </Link>
       </header>
 
       <section>

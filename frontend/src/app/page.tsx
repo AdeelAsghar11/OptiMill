@@ -64,10 +64,16 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 w-full sm:w-auto">
             <Link 
               href="/upload"
-              className="btn-premium px-8 py-4 rounded-2xl text-white font-black uppercase tracking-widest text-sm w-full sm:w-auto text-center flex items-center justify-center gap-2"
+              className="btn-premium px-8 py-4 rounded-2xl text-white font-black uppercase tracking-widest text-sm w-full sm:w-auto text-center flex items-center justify-center gap-2 shadow-2xl"
             >
-              Start Project
+              Analyze CAD File
               <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link 
+              href="/request"
+              className="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black uppercase tracking-widest transition-all text-sm w-full sm:w-auto text-center shadow-lg"
+            >
+              Custom Order
             </Link>
             {user ? (
               <div className="flex flex-col sm:flex-row items-center gap-4">

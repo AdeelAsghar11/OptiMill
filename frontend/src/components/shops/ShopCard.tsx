@@ -57,12 +57,19 @@ export function ShopCard({ shop, index, userLocation }: ShopCardProps) {
                 <ShieldCheck className="w-4 h-4 text-emerald-400 fill-emerald-400/10" />
               )}
             </div>
-            {(shop.location_city || shop.location_country) && (
-              <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
-                <MapPin className="w-3 h-3 text-slate-600" />
-                {[shop.location_city, shop.location_country].filter(Boolean).join(", ")}
-              </p>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {(shop.location_city || shop.location_country) && (
+                <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3 text-slate-600" />
+                  {[shop.location_city, shop.location_country].filter(Boolean).join(", ")}
+                </p>
+              )}
+              {distance !== null && (
+                <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[9px] font-black uppercase tracking-widest">
+                  {distance.toFixed(1)} KM Away
+                </span>
+              )}
+            </div>
           </div>
         </div>
         {shop.rating !== undefined && shop.rating > 0 && (
@@ -118,14 +125,7 @@ export function ShopCard({ shop, index, userLocation }: ShopCardProps) {
         </Link>
       </div>
 
-      {/* Distance Overlay */}
-      {distance !== null && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl">
-            {distance.toFixed(1)} KM Away
-          </span>
-        </div>
-      )}
+
     </motion.div>
   );
 }

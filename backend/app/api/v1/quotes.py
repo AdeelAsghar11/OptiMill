@@ -9,14 +9,14 @@ router = APIRouter()
 
 # --- Schemas ---
 class QuoteRequest(BaseModel):
-    cad_file_id: str
     shop_id: str
+    cad_file_id: Optional[str] = None
     message: Optional[str] = None
     quantity: int = 1
 
 class MultiQuoteRequest(BaseModel):
-    cad_file_id: str
     shop_ids: list[str]
+    cad_file_id: Optional[str] = None
     message: Optional[str] = None
     quantity: int = 1
 
@@ -33,12 +33,15 @@ class OrderCreate(BaseModel):
 # --- t18: Client requests a quote from a shop ---
 @router.post("/request")
 async def request_quote(data: QuoteRequest, current_user: dict = Depends(require_role(["client", "admin"]))):
-    """Client requests a quote for a CAD file from a specific shop."""
+    """Client requests a quote for a CAD file or custom request from a specific shop."""
     try:
-        # Verify the CAD file belongs to the client
-        cad = supabase.table("cad_files").select("id, file_name").eq("id", data.cad_file_id).eq("client_id", current_user["id"]).single().execute()
-        if not cad.data:
-            raise HTTPException(status_code=404, detail="CAD file not found or access denied.")
+        # Verify the CAD file belongs to the client if provided
+        file_name = "Custom Request"
+        if data.cad_file_id:
+            cad = supabase.table("cad_files").select("id, file_name").eq("id", data.cad_file_id).eq("client_id", current_user["id"]).single().execute()
+            if not cad.data:
+                raise HTTPException(status_code=404, detail="CAD file not found or access denied.")
+            file_name = cad.data["file_name"]
 
         res = supabase.table("quote_requests").insert({
             "client_id": current_user["id"],
@@ -56,7 +59,7 @@ async def request_quote(data: QuoteRequest, current_user: dict = Depends(require
                 user_id=shop.data["owner_id"],
                 type="quote_received",
                 title="New Quote Request",
-                body=f"Client {current_user.get('email')} requested a quote for {cad.data['file_name']}.",
+                body=f"Client {current_user.get('email')} requested a quote for {file_name}.",
                 data={"request_id": res.data[0]["id"], "cad_file_id": data.cad_file_id}
             )
 
@@ -69,12 +72,15 @@ async def request_quote(data: QuoteRequest, current_user: dict = Depends(require
 
 @router.post("/multi-request")
 async def request_multi_quote(data: MultiQuoteRequest, current_user: dict = Depends(require_role(["client", "admin"]))):
-    """Client requests quotes from multiple shops for the same CAD file."""
+    """Client requests quotes from multiple shops."""
     try:
-        # Verify the CAD file belongs to the client
-        cad = supabase.table("cad_files").select("id, file_name").eq("id", data.cad_file_id).eq("client_id", current_user["id"]).single().execute()
-        if not cad.data:
-            raise HTTPException(status_code=404, detail="CAD file not found or access denied.")
+        file_name = "Custom Request"
+        if data.cad_file_id:
+            # Verify the CAD file belongs to the client
+            cad = supabase.table("cad_files").select("id, file_name").eq("id", data.cad_file_id).eq("client_id", current_user["id"]).single().execute()
+            if not cad.data:
+                raise HTTPException(status_code=404, detail="CAD file not found or access denied.")
+            file_name = cad.data["file_name"]
 
         results = []
         for shop_id in data.shop_ids:
@@ -94,7 +100,7 @@ async def request_multi_quote(data: MultiQuoteRequest, current_user: dict = Depe
                     user_id=shop.data["owner_id"],
                     type="quote_received",
                     title="New Multi-Quote Request",
-                    body=f"Client {current_user.get('email')} requested a quote for {cad.data['file_name']}.",
+                    body=f"Client {current_user.get('email')} requested a quote for {file_name}.",
                     data={"request_id": res.data[0]["id"], "cad_file_id": data.cad_file_id}
                 )
             results.append(res.data[0])

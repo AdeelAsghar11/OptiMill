@@ -197,7 +197,13 @@ export default function ShopProfilePage() {
               href={`/upload?shop=${shopId}`}
               className="flex items-center justify-center gap-2 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
             >
-              <DollarSign className="w-5 h-5" /> Request Quote
+              <DollarSign className="w-5 h-5" /> Request Quote (CAD)
+            </Link>
+            <Link
+              href={`/request?shop=${shopId}`}
+              className="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold transition-all"
+            >
+              <Package className="w-5 h-5 text-slate-400" /> Custom Request (No CAD)
             </Link>
             <button className="flex items-center justify-center gap-2 w-full py-3.5 border border-slate-700 hover:border-blue-500/50 rounded-xl text-slate-400 hover:text-white font-medium transition-all">
               <MessageCircle className="w-4 h-4" /> Message Shop

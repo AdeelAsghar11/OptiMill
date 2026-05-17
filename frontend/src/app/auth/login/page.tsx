@@ -59,6 +59,31 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* Demo Test Accounts Banner */}
+        <div className="mb-6 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
+          <h3 className="text-xs font-black uppercase tracking-widest text-blue-400 mb-3 flex items-center gap-2">
+            <Cpu className="w-3.5 h-3.5" /> Demo Test Accounts
+          </h3>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button 
+              type="button"
+              onClick={() => { setEmail("client@optimill.com"); setPassword("password123"); }}
+              className="flex-1 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-left group"
+            >
+              <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Client View</div>
+              <div className="text-xs text-slate-300 font-mono">client@optimill.com</div>
+            </button>
+            <button 
+              type="button"
+              onClick={() => { setEmail("shop@optimill.com"); setPassword("password123"); }}
+              className="flex-1 py-2 px-3 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-colors text-left group"
+            >
+              <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider mb-1">Shop Owner View</div>
+              <div className="text-xs text-indigo-200 font-mono">shop@optimill.com</div>
+            </button>
+          </div>
+        </div>
+
         <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-2xl">
           <h1 className="text-3xl font-bold text-white mb-2 text-center tracking-tight">
             Welcome back

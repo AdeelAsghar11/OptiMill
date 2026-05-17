@@ -78,17 +78,25 @@ async def discover_shops(
             query = query.ilike("address", f"%{city}%")
         if min_rating:
             query = query.gte("rating", min_rating)
-        if capability:
-            query = query.contains("capabilities", [capability])
-        if material:
-            query = query.contains("materials", [material])
         if min_lat is not None and max_lat is not None:
             query = query.gte("lat", min_lat).lte("lat", max_lat)
         if min_lon is not None and max_lon is not None:
             query = query.gte("lng", min_lon).lte("lng", max_lon)
 
         res = query.execute()
-        shops = res.data
+        all_shops = res.data
+        
+        shops = []
+        for shop in all_shops:
+            if capability:
+                shop_caps = [c.lower() for c in (shop.get("capabilities") or [])]
+                if capability.lower() not in shop_caps:
+                    continue
+            if material:
+                shop_mats = [m.lower() for m in (shop.get("materials") or [])]
+                if material.lower() not in shop_mats:
+                    continue
+            shops.append(shop)
         
         # Add mock lat/lon if missing for map demo
         import random
